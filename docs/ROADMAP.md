@@ -61,19 +61,25 @@
 
 ---
 
-## Fase 3 — Supabase: proyecto, esquema y RLS
+## Fase 3 — Supabase: proyecto, esquema y RLS ✅
 
-- [ ] ⚠️ ACCIÓN MANUAL: crear proyecto en [Supabase](https://supabase.com) y compartir `Project URL` y `anon public key`. Pasos detallados en `docs/INTEGRATIONS.md` → sección Supabase.
-- [ ] ⚠️ ACCIÓN MANUAL: guardar la `service_role key` en un gestor de secretos personal (NO entregarla por chat sin necesidad — solo se usa en Edge Functions).
-- [ ] Instalar `@supabase/supabase-js` en `apps/web`.
-- [ ] Crear `apps/web/src/lib/supabase.ts` con el cliente configurado por env vars.
-- [ ] Crear `supabase/migrations/0001_init.sql` con tablas según `docs/DATABASE_SCHEMA.md`:
-  - `profiles`, `subscriptions`, `horoscope_cache`, `tarot_readings`, `natal_charts`, `compatibility_reports`, `streaks`, `user_events`, `legal_consents`.
-- [ ] Activar RLS en TODAS las tablas y escribir las políticas indicadas en `docs/DATABASE_SCHEMA.md`.
-- [ ] Crear funciones SQL auxiliares: `get_zodiac_sign(birth_date date)`, `increment_streak(user_id uuid)`.
-- [ ] Crear trigger `on_auth_user_created` que cree la fila en `profiles` cuando se registra un usuario en `auth.users`.
-- [ ] Ejecutar las migraciones contra el proyecto Supabase y verificar con `list_tables`.
-- [ ] Ejecutar el advisor de Supabase y resolver cualquier warning de seguridad/performance.
+- [x] ⚠️ ACCIÓN MANUAL: crear proyecto en [Supabase](https://supabase.com) y compartir `Project URL` y `anon public key`. Proyecto **Zodiaq** (ref `asotgxhniqcdkwainijo`, región `eu-west-3` París — UE por RGPD, PostgreSQL 17).
+- [x] ⚠️ ACCIÓN MANUAL: la `service_role key` NO se necesita aún. Se usará en Fase 6/8 y se subirá directamente al dashboard como Secret de Edge Functions (nunca al repo).
+- [x] Instalar `@supabase/supabase-js` en `apps/web` (ya estaba desde Fase 1).
+- [x] Crear `apps/web/src/lib/supabase.ts` con el cliente tipado configurado por env vars.
+- [x] Crear migraciones en `supabase/migrations/` según `docs/DATABASE_SCHEMA.md` (11 tablas): `profiles`, `subscriptions`, `horoscope_cache`, `daily_energy`, `astro_events`, `tarot_readings`, `natal_charts`, `compatibility_reports`, `streaks`, `user_events`, `legal_consents`.
+- [x] Activar RLS en TODAS las tablas y escribir las políticas (lectura propia, escritura por service_role, lectura pública del contenido cacheado).
+- [x] Crear funciones SQL: `get_zodiac_sign(date)`, `increment_streak()`, `private.is_premium(uuid)`, `set_updated_at()`.
+- [x] Crear trigger `on_auth_user_created` (crea `profiles` + `streaks` al registrar usuario, calcula el signo en servidor).
+- [x] Aplicar las migraciones (6 en total) y verificar con `list_tables` (11 tablas, todas con RLS).
+- [x] Ejecutar advisors y resolver warnings: relocalizadas funciones SECURITY DEFINER, optimizadas las 14 políticas RLS con `(select auth.uid())`, añadido índice FK en `user_events`.
+- [x] Generar tipos TypeScript del esquema → `apps/web/src/types/supabase.ts`.
+- [x] Prueba de conectividad real: lectura pública OK, RLS bloquea tabla privada sin sesión, RPC `get_zodiac_sign` correcto.
+
+**Notas técnicas (Fase 3):**
+- Advisor de seguridad: queda 1 WARN intencionado — `increment_streak` es invocable por `authenticated` por diseño (RPC que actualiza solo la fila del propio usuario). Aceptado y documentado.
+- Advisor de rendimiento: solo quedan INFO de "índices sin usar", normal en BBDD nueva sin tráfico; se usarán al funcionar la app, no se eliminan.
+- Las claves públicas (URL + anon key) están en `apps/web/.env.local` (ignorado por git). La `anon key` es la que usa `@supabase/supabase-js`.
 
 ---
 
