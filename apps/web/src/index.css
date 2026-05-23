@@ -1,0 +1,92 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+
+/* ============================================================
+   Tailwind v4 theme — Zodiaq
+   Tokens definidos según docs/DESIGN_SYSTEM.md
+   ============================================================ */
+@theme {
+  /* Fuentes */
+  --font-display: 'Fraunces', ui-serif, Georgia, serif;
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+
+  /* Neutros base */
+  --color-ink: #0f172a;
+  --color-graphite: #334155;
+  --color-silver: #94a3b8;
+  --color-mist: #f3f4f6;
+  --color-cloud: #f9fafb;
+
+  /* Marca (cosmos) */
+  --color-cosmos-50: #eef2ff;
+  --color-cosmos-100: #e0e7ff;
+  --color-cosmos-200: #c7d2fe;
+  --color-cosmos-300: #a5b4fc;
+  --color-cosmos-400: #818cf8;
+  --color-cosmos-500: #6366f1;
+  --color-cosmos-600: #4f46e5;
+  --color-cosmos-700: #4338ca;
+  --color-cosmos-800: #3730a3;
+  --color-cosmos-900: #312e81;
+
+  /* Aurora (acento violeta claro) */
+  --color-aurora-300: #c4b5fd;
+  --color-aurora-400: #a78bfa;
+  --color-aurora-500: #8b5cf6;
+
+  /* Premium (oro) */
+  --color-gold-300: #fcd34d;
+  --color-gold-400: #fbbf24;
+  --color-gold-500: #f59e0b;
+  --color-gold-600: #d97706;
+  --color-starlight: #fcd34d;
+
+  /* Espaciados extra */
+  --spacing-18: 4.5rem;
+  --spacing-22: 5.5rem;
+  --spacing-26: 6.5rem;
+
+  /* Sombras místicas */
+  --shadow-glow-cosmos: 0 8px 32px -8px rgba(99, 102, 241, 0.45);
+  --shadow-glow-gold: 0 8px 32px -8px rgba(245, 158, 11, 0.45);
+}
+
+/* Reset y base */
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-white font-sans text-[color:var(--color-ink)] antialiased;
+    font-feature-settings:
+      'ss01' on,
+      'cv11' on;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display text-[color:var(--color-ink)];
+    letter-spacing: -0.01em;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-cosmos-500 ring-offset-2;
+  }
+}
+
+/* Utilities propias */
+@layer utilities {
+  .shadow-glow-cosmos {
+    box-shadow: var(--shadow-glow-cosmos);
+  }
+  .shadow-glow-gold {
+    box-shadow: var(--shadow-glow-gold);
+  }
+}
