@@ -44,19 +44,20 @@
 
 ---
 
-## Fase 2 — Sistema de diseño y layout global
+## Fase 2 — Sistema de diseño y layout global ✅
 
-- [ ] Definir tokens de Tailwind (colores, sombras, radios, espaciados) según `docs/DESIGN_SYSTEM.md`.
-- [ ] Definir la paleta de colores por signo (`signColors`) en un módulo central.
-- [ ] Crear componentes base: `Button`, `Card`, `Badge`, `Input`, `Select`, `Modal`, `Toast`, `Skeleton`.
-- [ ] Crear `<NavBar />` sticky superior (logo, links, login/perfil, indicador premium).
-- [ ] Crear `<Footer />` con enlaces legales, RRSS placeholder y copyright.
-- [ ] Crear `<Layout />` que envuelve todas las páginas (NavBar + outlet + Footer).
-- [ ] Implementar `useScrollDirection` para animar la NavBar (opcional).
-- [ ] Crear un componente `<SignCard />` reutilizable (icono, nombre, colores del signo).
-- [ ] Crear página `/` (landing) con hero, grid de 12 signos, sección de funcionalidades, CTA premium.
-- [ ] Diseño 100% responsive (mobile-first). Probar en 360px, 768px, 1280px.
-- [ ] Smoke test visual: capturas de la landing en escritorio y móvil.
+- [x] Definir tokens de Tailwind (colores, sombras, radios, espaciados) según `docs/DESIGN_SYSTEM.md`.
+- [x] Definir la paleta de colores por signo (`signColors`) en un módulo central (`src/lib/zodiac.ts`).
+- [x] Crear componentes base: `Button`, `Card`, `Badge`, `Input`, `Select`, `Modal`, `Toast`, `Skeleton`.
+- [x] Crear `<NavBar />` sticky superior con menú móvil, indicador de scroll y links a las funcionalidades.
+- [x] Crear `<Footer />` con enlaces legales, redes sociales placeholder y copyright dinámico.
+- [x] Crear `<Layout />` que envuelve todas las páginas (NavBar + Outlet + Footer + ToastViewport).
+- [x] Implementar `useScrollDirection` para animar la NavBar.
+- [x] Crear un componente `<SignCard />` reutilizable (icono, nombre, fechas, gradiente por signo).
+- [x] Crear página `/` (landing) con hero, grid de 12 signos, sección de 4 funcionalidades y CTA premium destacado.
+- [x] Diseño 100% responsive (mobile-first) verificado: grid se adapta de 2 cols (móvil) → 3 → 4 → 6 (lg).
+- [x] NotFoundPage con tono cuidado y CTAs útiles.
+- [ ] Smoke test visual manual: capturas de la landing en escritorio y móvil (lo hace el autor del TFM cuando quiera documentar la fase para la memoria).
 
 ---
 
