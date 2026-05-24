@@ -30,6 +30,21 @@ const ResetPasswordPage = lazy(() =>
 const ProfilePage = lazy(() =>
   import('@/pages/ProfilePage').then((m) => ({ default: m.ProfilePage })),
 );
+const DailyHoroscopePage = lazy(() =>
+  import('@/pages/horoscope/DailyHoroscopePage').then((m) => ({
+    default: m.DailyHoroscopePage,
+  })),
+);
+const WeeklyHoroscopePage = lazy(() =>
+  import('@/pages/horoscope/WeeklyHoroscopePage').then((m) => ({
+    default: m.WeeklyHoroscopePage,
+  })),
+);
+const MonthlyHoroscopePage = lazy(() =>
+  import('@/pages/horoscope/MonthlyHoroscopePage').then((m) => ({
+    default: m.MonthlyHoroscopePage,
+  })),
+);
 const DataPrivacyPage = lazy(() =>
   import('@/pages/DataPrivacyPage').then((m) => ({ default: m.DataPrivacyPage })),
 );
@@ -74,6 +89,14 @@ export const router = createBrowserRouter([
     element: <Layout />,
     children: [
       { index: true, element: withSuspense(<HomePage />) },
+
+      // Horóscopos (gratuitos, públicos)
+      { path: 'horoscopo/diario', element: withSuspense(<DailyHoroscopePage />) },
+      { path: 'horoscopo/diario/:sign', element: withSuspense(<DailyHoroscopePage />) },
+      { path: 'horoscopo/semanal', element: withSuspense(<WeeklyHoroscopePage />) },
+      { path: 'horoscopo/semanal/:sign', element: withSuspense(<WeeklyHoroscopePage />) },
+      { path: 'horoscopo/mensual', element: withSuspense(<MonthlyHoroscopePage />) },
+      { path: 'horoscopo/mensual/:sign', element: withSuspense(<MonthlyHoroscopePage />) },
 
       // Autenticación
       { path: 'login', element: withSuspense(<SignInPage />) },
