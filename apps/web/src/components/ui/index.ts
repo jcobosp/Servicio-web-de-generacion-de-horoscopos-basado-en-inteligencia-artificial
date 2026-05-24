@@ -13,6 +13,9 @@ export type { CardProps, CardTone, CardPadding } from './Card';
 export { Badge } from './Badge';
 export type { BadgeProps, BadgeTone } from './Badge';
 
+export { Checkbox } from './Checkbox';
+export type { CheckboxProps } from './Checkbox';
+
 export { Input } from './Input';
 export type { InputProps } from './Input';
 

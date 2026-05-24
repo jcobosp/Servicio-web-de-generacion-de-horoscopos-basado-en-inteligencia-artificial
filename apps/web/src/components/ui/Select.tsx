@@ -8,11 +8,11 @@ export interface SelectOption {
 }
 
 export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
-  label?: string;
-  hint?: string;
-  error?: string;
+  label?: string | undefined;
+  hint?: string | undefined;
+  error?: string | undefined;
   options: SelectOption[];
-  placeholder?: string;
+  placeholder?: string | undefined;
 }
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select(

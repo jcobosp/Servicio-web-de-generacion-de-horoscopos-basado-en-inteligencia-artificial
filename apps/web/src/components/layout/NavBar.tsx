@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { Button, LinkButton } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { cn } from '@/lib/cn';
+import { useAuth } from '@/features/auth/AuthProvider';
+import { signOut } from '@/features/auth/api';
 
 interface NavItem {
   label: string;
@@ -19,7 +21,15 @@ const navItems: NavItem[] = [
 
 export function NavBar() {
   const { scrolled } = useScrollDirection(80);
+  const { session } = useAuth();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+
+  async function onLogout() {
+    await signOut();
+    setOpen(false);
+    navigate('/', { replace: true });
+  }
 
   return (
     <header
@@ -86,12 +96,25 @@ export function NavBar() {
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
-          <LinkButton to="/login" variant="ghost" size="sm">
-            Iniciar sesión
-          </LinkButton>
-          <LinkButton to="/registro" variant="primary" size="sm">
-            Registrarse
-          </LinkButton>
+          {session ? (
+            <>
+              <LinkButton to="/perfil" variant="secondary" size="sm">
+                Mi perfil
+              </LinkButton>
+              <Button variant="ghost" size="sm" onClick={onLogout}>
+                Cerrar sesión
+              </Button>
+            </>
+          ) : (
+            <>
+              <LinkButton to="/login" variant="ghost" size="sm">
+                Iniciar sesión
+              </LinkButton>
+              <LinkButton to="/registro" variant="primary" size="sm">
+                Registrarse
+              </LinkButton>
+            </>
+          )}
         </div>
 
         <Button
@@ -145,14 +168,30 @@ export function NavBar() {
                 </NavLink>
               ))}
             </nav>
-            <div className="mt-4 grid grid-cols-2 gap-2">
-              <LinkButton to="/login" variant="secondary" fullWidth>
-                Iniciar sesión
-              </LinkButton>
-              <LinkButton to="/registro" variant="primary" fullWidth>
-                Registrarse
-              </LinkButton>
-            </div>
+            {session ? (
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                <LinkButton
+                  to="/perfil"
+                  variant="secondary"
+                  fullWidth
+                  className=""
+                >
+                  Mi perfil
+                </LinkButton>
+                <Button variant="ghost" fullWidth onClick={onLogout}>
+                  Cerrar sesión
+                </Button>
+              </div>
+            ) : (
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                <LinkButton to="/login" variant="secondary" fullWidth>
+                  Iniciar sesión
+                </LinkButton>
+                <LinkButton to="/registro" variant="primary" fullWidth>
+                  Registrarse
+                </LinkButton>
+              </div>
+            )}
           </div>
         </div>
       )}

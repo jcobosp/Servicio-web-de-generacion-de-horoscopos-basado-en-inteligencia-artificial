@@ -3,9 +3,9 @@ import type { InputHTMLAttributes, ReactNode } from 'react';
 import { cn } from '@/lib/cn';
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  label?: string;
-  hint?: string;
-  error?: string;
+  label?: string | undefined;
+  hint?: string | undefined;
+  error?: string | undefined;
   leftAddon?: ReactNode;
   rightAddon?: ReactNode;
 }
