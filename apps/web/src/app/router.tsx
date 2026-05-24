@@ -51,6 +51,9 @@ const EnergyOfDayPage = lazy(() =>
 const AstroEventsPage = lazy(() =>
   import('@/pages/AstroEventsPage').then((m) => ({ default: m.AstroEventsPage })),
 );
+const TarotPage = lazy(() =>
+  import('@/pages/TarotPage').then((m) => ({ default: m.TarotPage })),
+);
 const DataPrivacyPage = lazy(() =>
   import('@/pages/DataPrivacyPage').then((m) => ({ default: m.DataPrivacyPage })),
 );
@@ -106,6 +109,7 @@ export const router = createBrowserRouter([
       { path: 'energia-del-dia', element: withSuspense(<EnergyOfDayPage />) },
       { path: 'energia-del-dia/:sign', element: withSuspense(<EnergyOfDayPage />) },
       { path: 'eventos-astrologicos', element: withSuspense(<AstroEventsPage />) },
+      { path: 'tarot/simple', element: withSuspense(<TarotPage />) },
 
       // Autenticación
       { path: 'login', element: withSuspense(<SignInPage />) },
