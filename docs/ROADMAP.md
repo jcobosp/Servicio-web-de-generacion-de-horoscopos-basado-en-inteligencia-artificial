@@ -123,14 +123,21 @@
 
 ---
 
-## Fase 6 — Motor de generación de horóscopos (Gemini)
+## Fase 6 — Motor de generación de horóscopos (Gemini) ✅
 
-- [ ] ⚠️ ACCIÓN MANUAL: confirmar la API key de Gemini disponible en Google Cloud y los límites de tokens. Compartir como secreto de Supabase (NO en .env del cliente). Pasos en `docs/INTEGRATIONS.md` → sección Gemini.
-- [ ] Crear Edge Function `supabase/functions/generate-horoscope/index.ts`.
-- [ ] Implementar dentro: llamada a Gemini 2.5 Flash con prompts de `docs/CONTENT_STRATEGY.md`, control de longitud por tipo de contenido, validación del JSON de salida.
-- [ ] Implementar cache: si ya existe fila en `horoscope_cache` para `(sun_sign, scope, area, date)`, devolverla; si no, generar, guardar y devolver.
-- [ ] Implementar control de coste: si el contador diario de la función supera el límite, devolver contenido del día anterior o un mensaje suave.
-- [ ] Test manual: invocar la función desde un script y verificar formato, longitud y tono.
+- [x] ⚠️ ACCIÓN MANUAL: confirmar la API key de Gemini disponible en Google Cloud y los límites de tokens. Compartir como secreto de Supabase (NO en .env del cliente). **Hecho:** el usuario añadió `GEMINI_API_KEY` como secret de Edge Functions; generación verificada en real.
+- [x] Crear Edge Function `supabase/functions/generate-horoscope/` (módulos `index.ts`, `gemini.ts`, `prompts.ts`, `lib.ts`). Desplegada vía MCP (v2, `verify_jwt=false` → pública para horóscopos free con o sin sesión).
+- [x] Implementar dentro: llamada a Gemini 2.5 Flash con prompts de `docs/CONTENT_STRATEGY.md`, control de longitud por scope (`maxOutputTokens`), `responseMimeType: application/json` + `responseSchema`, y validación del JSON de salida (campos, tipos y rango de palabras) con un reintento de prompt reforzado. `disclaimer` automático en áreas salud/dinero.
+- [x] Implementar cache: lookup en `horoscope_cache (sun_sign, scope, area, period_start)`; si existe devuelve (cached), si no genera, hace upsert (idempotente `onConflict`) y devuelve la fila canónica. **Verificado:** 2ª llamada idéntica sirve de cache sin nueva generación.
+- [x] Implementar control de coste: contador diario de eventos `gemini_call` en `user_events` vs `GEMINI_DAILY_LIMIT` (def. 300); si se supera, devuelve el período anterior de cache o un mensaje suave. Métricas (latencia, tokens_out) logueadas por llamada.
+- [x] Test manual: invocada vía `Invoke-RestMethod` (Leo diario general + health). Formato, longitud (~95-110 palabras), tono cálido y disclaimer correctos.
+
+**Notas técnicas (Fase 6):**
+- `gemini-2.5-flash` razona por defecto; con `maxOutputTokens` ajustado los tokens de "thinking" truncaban el JSON (1ª prueba → `validation_failed`). Solución: `thinkingConfig: { thinkingBudget: 0 }` + márgenes de tokens más amplios (daily 600 / weekly 900 / monthly 1400). Documentado en el código.
+- `period_start` se calcula en zona `Europe/Madrid`: diario = fecha; semanal = lunes ISO; mensual = día 1. Acepta `date` opcional en el body (por defecto hoy en Madrid).
+- Tipos REST del `responseSchema` en MAYÚSCULAS (`OBJECT`/`STRING`/`INTEGER`), no las del SDK.
+- Validación: hecha a mano (sin Zod) porque el `responseSchema` ya fuerza la estructura; el chequeo manual es defensivo y evita una dependencia extra en el cold start. Desviación consciente respecto a `INTEGRATIONS.md`.
+- Pendiente para Fase 7: cliente tipado en el frontend (`features/horoscope/`) que invoque esta función y pinte el resultado + `<UpsellCard>` con `premium_hook`.
 
 ---
 
