@@ -154,7 +154,7 @@
 > 2. **Pasar a Gemini el contenido del periodo anterior** del mismo signo para que no se repita.
 > 3. **Retención = periodo actual + anterior** (se borra lo más antiguo al generar): diario→hoy+ayer; semanal→2 semanas; mensual/eventos→2 meses. **Carta natal: nunca se borra** (se genera una vez por usuario).
 > 4. **Contenido emocional/psicológico** manteniendo las longitudes acordadas.
-- [ ] Página `/eventos-astrologicos` (lista de eventos del mes: lunas, tránsitos importantes).
+- [~] Página `/eventos-astrologicos` con lunas (nueva/llena) e ingresos del Sol/Mercurio/Venus/Marte del mes en curso. Cálculo **astronómico real con `npm:astronomy-engine@2.1.19`** server-side (Edge Function `generate-astro-events`); Gemini escribe título + descripción con técnicas psicológicas. Retención mes actual + anterior. Cron `astro-events-generation` (40 4 1 * *) programado y APAGADO por defecto (mig. 0011). *Pendiente del OK del usuario.*
 - [ ] Página `/carta-natal/basica` — pide hora y lugar (opcional, con autocompletado de ciudades) y muestra Sol/Luna/Ascendente. **DECISIÓN (usuario):** calcular Luna/Ascendente con la librería de efemérides `astronomy-engine` (MIT, sin dependencias) en el cliente; el Sol ya sale de la fecha. Pendiente de implementar.
 - [ ] Página `/tarot/simple` — tirada de 1 o 3 cartas (24 horas de cooldown gratuito).
 - [x] Sistema de rachas: badge 🔥 en NavBar con días consecutivos; toasts de hito (3/7/14/30) vía RPC `increment_streak` al ver el horóscopo diario (`features/streaks/`).
