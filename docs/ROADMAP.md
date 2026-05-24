@@ -143,16 +143,22 @@
 
 ## Fase 7 — Funcionalidades gratuitas
 
-- [ ] Página `/horoscopo/diario` (carga por signo del usuario, fallback a selector si no hay sesión).
-- [ ] Página `/horoscopo/semanal` y `/horoscopo/mensual` (misma estructura).
-- [ ] Tabs por área: general, amor, salud, dinero, trabajo.
+- [x] Página `/horoscopo/diario` (carga por signo del usuario, fallback a selector `<SignPicker>` si no hay sesión). Acepta `/horoscopo/diario/:sign` (URLs limpias por signo, SEO).
+- [x] Página `/horoscopo/semanal` y `/horoscopo/mensual` (misma estructura, vía `<HoroscopeView scope>`; navegación entre periodos en la cabecera).
+- [x] Tabs por área: general, amor, salud, dinero, trabajo (`<AreaTabs>`).
 - [ ] Página `/energia-del-dia` con la energía global de la jornada (independiente del signo).
 - [ ] Página `/eventos-astrologicos` (lista de eventos del mes: lunas, tránsitos importantes).
-- [ ] Página `/carta-natal/basica` — pide hora y lugar (opcional, con autocompletado de ciudades) y muestra Sol/Luna/Ascendente.
+- [ ] Página `/carta-natal/basica` — pide hora y lugar (opcional, con autocompletado de ciudades) y muestra Sol/Luna/Ascendente. **DECISIÓN (usuario):** calcular Luna/Ascendente con la librería de efemérides `astronomy-engine` (MIT, sin dependencias) en el cliente; el Sol ya sale de la fecha. Pendiente de implementar.
 - [ ] Página `/tarot/simple` — tirada de 1 o 3 cartas (24 horas de cooldown gratuito).
-- [ ] Sistema de rachas: badge en NavBar con días consecutivos, animación al subir.
-- [ ] Card de upsell al final de cada resultado gratuito (copys en `docs/MARKETING_STRATEGY.md`).
-- [ ] Integrar AdSense en las páginas gratuitas según pautas de `docs/INTEGRATIONS.md` → AdSense.
+- [x] Sistema de rachas: badge 🔥 en NavBar con días consecutivos; toasts de hito (3/7/14/30) vía RPC `increment_streak` al ver el horóscopo diario (`features/streaks/`).
+- [x] Card de upsell al final de cada resultado gratuito (`<UpsellCard>`, copys de `docs/MARKETING_STRATEGY.md` + `premium_hook` de Gemini).
+- [x] Integrar AdSense en las páginas gratuitas (`<AdSlot>`): solo plan free + consentimiento de publicidad; script cargado por `ConsentScripts`. Placeholder en dev hasta tener dominio/cliente en producción.
+
+**Notas técnicas (Fase 7, núcleo de horóscopos):**
+- `features/horoscope/` (api+hooks+types) invoca la Edge Function `generate-horoscope` (pública). `<HoroscopeView scope>` resuelve el signo (parámetro de URL → `profiles.sun_sign` → selector), gestiona tabs de área y compone tarjeta + upsell + anuncio + picker de otros signos.
+- `features/billing/useIsPremium()` (lectura de `subscriptions`) oculta anuncios a premium; se ampliará en Fase 8.
+- Verificado: `typecheck`, `lint` y `build` OK. La generación real ya se validó en Fase 6 (hay cache de Leo/diario).
+- **Pendiente de esta fase:** energía del día, eventos astrológicos, carta natal básica (con decisión de efemérides) y tarot simple.
 
 ---
 

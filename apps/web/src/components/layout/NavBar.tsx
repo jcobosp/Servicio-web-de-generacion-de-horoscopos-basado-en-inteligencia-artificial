@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/Badge';
 import { cn } from '@/lib/cn';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { signOut } from '@/features/auth/api';
+import { useStreak } from '@/features/streaks/hooks';
 
 interface NavItem {
   label: string;
@@ -22,8 +23,11 @@ const navItems: NavItem[] = [
 export function NavBar() {
   const { scrolled } = useScrollDirection(80);
   const { session } = useAuth();
+  const { data: streak } = useStreak();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+
+  const streakDays = streak?.current_streak ?? 0;
 
   async function onLogout() {
     await signOut();
@@ -98,6 +102,15 @@ export function NavBar() {
         <div className="hidden items-center gap-2 md:flex">
           {session ? (
             <>
+              {streakDays > 0 && (
+                <span
+                  title={`Racha de ${streakDays} día${streakDays === 1 ? '' : 's'}`}
+                  className="inline-flex items-center gap-1 rounded-full bg-gold-50 px-2.5 py-1 text-sm font-semibold text-gold-600"
+                >
+                  <span aria-hidden="true">🔥</span>
+                  {streakDays}
+                </span>
+              )}
               <LinkButton to="/perfil" variant="secondary" size="sm">
                 Mi perfil
               </LinkButton>
