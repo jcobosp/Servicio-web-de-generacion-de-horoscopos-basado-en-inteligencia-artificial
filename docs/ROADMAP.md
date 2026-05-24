@@ -83,31 +83,43 @@
 
 ---
 
-## Fase 4 — Autenticación de usuarios
+## Fase 4 — Autenticación de usuarios ✅
 
-- [ ] Crear `features/auth/` con: `SignInPage`, `SignUpPage`, `ForgotPasswordPage`, `ResetPasswordPage`.
-- [ ] Formulario de registro con validación (Zod o similar): email, contraseña (mínimo 8 chars, 1 mayúscula, 1 número), nombre, fecha de nacimiento (date picker), checkboxes obligatorios de T&C y Política de Privacidad.
-- [ ] Calcular signo solar a partir de la fecha de nacimiento en el cliente (`getZodiacSign(date)`).
-- [ ] Llamar a `supabase.auth.signUp()` y guardar en `profiles` (vía trigger) el `display_name`, `birth_date`, `sun_sign` y los consentimientos en `legal_consents`.
-- [ ] Implementar inicio de sesión, cerrar sesión, recuperar contraseña.
-- [ ] Crear hook `useAuth()` (envuelve `supabase.auth.onAuthStateChange`).
-- [ ] Crear `<ProtectedRoute />` que redirige a `/login` si no hay sesión.
-- [ ] Página `/perfil` con datos del usuario, botón de cerrar sesión, opción de editar perfil (nombre, hora y lugar de nacimiento opcionales para carta natal).
-- [ ] Página `/perfil/datos` para descargar/eliminar datos (derecho RGPD).
-- [ ] Implementar verificación de email obligatoria antes de acceder al producto.
+- [x] Crear `features/auth/` con: `SignInPage`, `SignUpPage`, `ForgotPasswordPage`, `ResetPasswordPage` (+ `AuthShell`, `AuthProvider`, `api.ts`, `validation.ts`).
+- [x] Formulario de registro con validación Zod: email, contraseña (mín 8 chars + mayúscula + minúscula + número), nombre, fecha de nacimiento, checkbox obligatorio de T&C + Privacidad, opt-in de marketing. Edad mínima 16 años validada.
+- [x] Calcular signo solar en el cliente (`getZodiacSign`) y mostrarlo en vivo en el formulario. El servidor lo recalcula (no se confía en el cliente).
+- [x] `supabase.auth.signUp()` con metadatos → trigger crea `profiles` (con `sun_sign`), `streaks` y 3 `legal_consents`. **Verificado end-to-end con un alta de prueba.**
+- [x] Inicio de sesión, cerrar sesión (NavBar + perfil) y recuperar/restablecer contraseña.
+- [x] Hook `useAuth()` vía `<AuthProvider>` (envuelve `onAuthStateChange` + `getSession`).
+- [x] `<ProtectedRoute />` que redirige a `/login` conservando la ruta de origen.
+- [x] Página `/perfil` con datos, racha/signo, edición de nombre y zona horaria, cerrar sesión.
+- [x] Página `/perfil/datos`: exportar datos en JSON (RGPD acceso/portabilidad) y eliminar cuenta con confirmación.
+- [x] Edge Function `delete-account` desplegada (verify_jwt) — borrado real con cascade. **Verificado: cascade elimina datos y conserva consentimientos con user_id NULL.**
+- [x] Verificación de email: con confirmación de email activada en Supabase no hay sesión hasta confirmar; el perfil avisa si el email no está confirmado.
+
+**Notas técnicas (Fase 4):**
+- La Edge Function `delete-account` cubre también la tarea equivalente de la Fase 5 (se marcará allí).
+- El hash de IP real en `legal_consents` requiere capturar la cabecera en una Edge Function (queda como mejora; ahora se marca `captured-at-signup`).
+- Bundle principal ~176 KB gzip al incluir supabase-js; pendiente code-splitting en Fase 10.
 
 ---
 
-## Fase 5 — Cumplimiento legal (RGPD / LSSI / Cookies)
+## Fase 5 — Cumplimiento legal (RGPD / LSSI / Cookies) ✅
 
-- [ ] Páginas estáticas: `/aviso-legal`, `/politica-de-privacidad`, `/terminos-y-condiciones`, `/politica-de-cookies`. Plantillas base en `docs/LEGAL_COMPLIANCE.md`.
-- [ ] ⚠️ ACCIÓN MANUAL: rellenar los datos del responsable (nombre, NIF/DNI, email de contacto) en las plantillas legales.
-- [ ] Banner de cookies con consentimiento granular (técnicas / analíticas / publicidad) — sin "accept all" por defecto.
-- [ ] Bloquear scripts de AdSense y analíticas hasta que el usuario consienta.
-- [ ] Guardar el consentimiento en `legal_consents` (versión, timestamp, IP hasheada).
-- [ ] Enlaces a las páginas legales desde el footer y desde los checkboxes del registro.
-- [ ] Implementar endpoint de "Exportar mis datos" (descarga JSON con todos los datos del usuario).
-- [ ] Implementar endpoint de "Eliminar mi cuenta" (borrado real, no soft delete, con confirmación por email).
+- [x] Páginas estáticas: `/aviso-legal`, `/politica-de-privacidad`, `/terminos-y-condiciones`, `/politica-de-cookies`. Plantillas base en `docs/LEGAL_COMPLIANCE.md`. Marco común en `components/legal/LegalPage.tsx`; contenido en `pages/legal/`.
+- [ ] ⚠️ ACCIÓN MANUAL (pendiente, diferida por el usuario): rellenar los datos reales del responsable (nombre, NIF/DNI, domicilio, email). Centralizados como placeholders en `apps/web/src/features/legal/company.ts` — es el ÚNICO archivo a editar. Hasta entonces las páginas muestran `[NOMBRE_RESPONSABLE]`, `[NIF]`, `[EMAIL_CONTACTO]`, etc.
+- [x] Banner de cookies con consentimiento granular (técnicas / analíticas / publicidad) — sin opción preseleccionada; "Rechazar todas" tan accesible como "Aceptar todas" (AEPD 2024). `features/legal/CookieBanner.tsx` + `CookiePreferences.tsx`.
+- [x] Bloquear scripts de AdSense y analíticas hasta que el usuario consienta. `features/legal/ConsentScripts.tsx` inyecta GA/AdSense solo con el consentimiento de su categoría y solo si hay `VITE_GA_ID` / `VITE_ADSENSE_CLIENT` (vacíos por ahora → no se carga nada). Listo para Fase 7/10.
+- [x] Guardar el consentimiento en `legal_consents` (versión, timestamp, IP hasheada). `features/legal/api.ts` inserta `cookies_analytics` y `cookies_marketing` para usuarios autenticados (la RLS exige sesión; los anónimos solo en cookie). IP hash = `captured-client-side` (misma limitación que el alta, requiere Edge Function — documentado).
+- [x] Enlaces a las páginas legales desde el footer y desde los checkboxes del registro. Footer ya enlazaba las 4 páginas; añadido botón "Configurar cookies". Los checkboxes del registro ya enlazaban T&C y privacidad (Fase 4).
+- [x] Implementar "Exportar mis datos" (descarga JSON con todos los datos del usuario) — hecho client-side vía RLS en `/perfil/datos` (adelantado en Fase 4).
+- [x] Implementar "Eliminar mi cuenta" (borrado real, no soft delete) — Edge Function `delete-account` con confirmación en la app (adelantado en Fase 4). *Mejora futura: confirmación adicional por email.*
+
+**Notas técnicas (Fase 5):**
+- El estado de consentimiento vive en la cookie `cookie-consent` (JSON, `SameSite=Lax`, `max-age` 24 meses) — fuente de verdad también para anónimos. `needsConsent()` re-muestra el banner si no hay decisión, si cambia `LEGAL_VERSION` o si caduca (>24 meses, recomendación AEPD).
+- `ConsentProvider` (en `app/providers.tsx`, dentro de `AuthProvider`) expone `useConsent()`. Lee la cookie de forma síncrona en el primer render (SPA sin SSR) para evitar parpadeo del banner.
+- `LEGAL_VERSION` (`1.0`) y `LEGAL_LAST_UPDATED` centralizados en `company.ts`; la versión coincide con la que el trigger de alta guarda en `legal_consents` (migración 0007).
+- Verificado: `npm run typecheck`, `npm run lint` y `npm run build` sin errores; dev server arranca limpio.
 
 ---
 

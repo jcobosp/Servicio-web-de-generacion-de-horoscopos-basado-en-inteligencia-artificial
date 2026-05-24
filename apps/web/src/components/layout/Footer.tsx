@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useConsent } from '@/features/legal/ConsentProvider';
 
 const productLinks = [
   { label: 'Horóscopo diario', to: '/horoscopo/diario' },
@@ -18,6 +19,7 @@ const legalLinks = [
 
 export function Footer() {
   const year = new Date().getFullYear();
+  const { openPreferences } = useConsent();
 
   return (
     <footer className="border-t border-slate-200 bg-white">
@@ -106,6 +108,15 @@ export function Footer() {
                   </Link>
                 </li>
               ))}
+              <li>
+                <button
+                  type="button"
+                  onClick={openPreferences}
+                  className="text-sm text-graphite transition hover:text-cosmos-700"
+                >
+                  Configurar cookies
+                </button>
+              </li>
             </ul>
           </div>
         </div>
