@@ -146,7 +146,14 @@
 - [x] Página `/horoscopo/diario` (carga por signo del usuario, fallback a selector `<SignPicker>` si no hay sesión). Acepta `/horoscopo/diario/:sign` (URLs limpias por signo, SEO).
 - [x] Página `/horoscopo/semanal` y `/horoscopo/mensual` (misma estructura, vía `<HoroscopeView scope>`; navegación entre periodos en la cabecera).
 - [x] Tabs por área: general, amor, salud, dinero, trabajo (`<AreaTabs>`).
-- [ ] Página `/energia-del-dia` con la energía global de la jornada (independiente del signo).
+- [~] **Política transversal aplicada también a `generate-horoscope`:** prompt psicológico (Forer, lectura en frío, anclaje emocional, polaridad, sensorial), contexto del periodo anterior pasado a Gemini para no repetir, retención por scope (current+previous: diario→hoy+ayer; semanal→2 semanas; mensual→2 meses) limpiando al generar. Cron migración `0010_horoscope_crons.sql`: daily 04:10 UTC, weekly 04:20 UTC lunes, monthly 04:30 UTC día 1 (escalonados para no saturar Gemini). 12 signos × 5 áreas = 60 generaciones por scope. *Pendiente del OK del usuario en la UI.*
+- [~] Página `/energia-del-dia` **por signo** (al usuario con sesión se le muestra la de su signo; sin sesión, selector). Incluye nivel de energía 1-10, foco y cautela, con contenido psicológico (Forer, lectura en frío). Backend `generate-daily-energy` por signo, auto-generación diaria con cron y retención hoy+ayer. *Pendiente del OK del usuario en la UI.*
+
+> **POLÍTICA DE CONTENIDO IA PERIÓDICO (aplicar a todas las funcionalidades diarias/semanales/mensuales):**
+> 1. **Auto-generación con cron** (`pg_cron` + `pg_net`, URL/anon key en Vault). Migración `0009_daily_cron.sql`.
+> 2. **Pasar a Gemini el contenido del periodo anterior** del mismo signo para que no se repita.
+> 3. **Retención = periodo actual + anterior** (se borra lo más antiguo al generar): diario→hoy+ayer; semanal→2 semanas; mensual/eventos→2 meses. **Carta natal: nunca se borra** (se genera una vez por usuario).
+> 4. **Contenido emocional/psicológico** manteniendo las longitudes acordadas.
 - [ ] Página `/eventos-astrologicos` (lista de eventos del mes: lunas, tránsitos importantes).
 - [ ] Página `/carta-natal/basica` — pide hora y lugar (opcional, con autocompletado de ciudades) y muestra Sol/Luna/Ascendente. **DECISIÓN (usuario):** calcular Luna/Ascendente con la librería de efemérides `astronomy-engine` (MIT, sin dependencias) en el cliente; el Sol ya sale de la fecha. Pendiente de implementar.
 - [ ] Página `/tarot/simple` — tirada de 1 o 3 cartas (24 horas de cooldown gratuito).

@@ -107,13 +107,29 @@ Deno.serve(async (req) => {
   const weekday = weekdayEs(period);
   const started = Date.now();
 
+  // Contexto del periodo anterior (mismo signo/scope/área) para que la nueva
+  // lectura no repita la anterior.
+  const prevPeriod = previousPeriodStart(scope, period);
+  const prevRow = await admin
+    .from('horoscope_cache').select('content')
+    .eq('sun_sign', sun_sign).eq('scope', scope).eq('area', area)
+    .eq('period_start', prevPeriod)
+    .maybeSingle();
+  const prevContent = prevRow.data?.content as
+    | { headline?: string; body?: string } | undefined;
+  const previous =
+    prevContent && typeof prevContent.headline === 'string' && typeof prevContent.body === 'string'
+      ? { headline: prevContent.headline, body: prevContent.body }
+      : undefined;
+
   let horoscope = null as ReturnType<typeof validateHoroscope> | null;
   let outputTokens = 0;
 
   try {
     for (let attempt = 0; attempt < 2; attempt++) {
       const prompt = buildHoroscopePrompt({
-        scope, area, signName, date: period, weekday, reinforce: attempt > 0,
+        scope, area, signName, date: period, weekday,
+        reinforce: attempt > 0, previous,
       });
       const result = await callGemini(prompt, {
         temperature: TEMPERATURE,
@@ -162,6 +178,13 @@ Deno.serve(async (req) => {
       },
       { onConflict: 'sun_sign,scope,area,period_start', ignoreDuplicates: true },
     );
+
+  // Retención = periodo actual + anterior, por scope. Se borran las filas con
+  // period_start < prevPeriod del mismo scope (sin tocar otros scopes).
+  await admin
+    .from('horoscope_cache').delete()
+    .eq('scope', scope)
+    .lt('period_start', prevPeriod);
 
   // Releer para converger si hubo carrera (otro proceso generó a la vez).
   const stored = await admin

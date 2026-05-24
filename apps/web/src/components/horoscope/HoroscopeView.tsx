@@ -80,7 +80,7 @@ export function HoroscopeView({ scope }: HoroscopeViewProps) {
             </p>
           </header>
           <div className="mt-8">
-            <SignPicker scope={scope} />
+            <SignPicker hrefFor={(slug) => `/horoscopo/${meta.path}/${slug}`} />
           </div>
         </div>
       </>
@@ -156,12 +156,15 @@ export function HoroscopeView({ scope }: HoroscopeViewProps) {
           />
         </div>
 
-        <UpsellCard scope={scope} premiumHook={premiumHook} />
+        <UpsellCard variant={scope} premiumHook={premiumHook} />
 
         <AdSlot className="mt-8" />
 
         <div className="mt-12 border-t border-slate-200 pt-8">
-          <SignPicker scope={scope} title="Consulta otro signo" />
+          <SignPicker
+            hrefFor={(slug) => `/horoscopo/${meta.path}/${slug}`}
+            title="Consulta otro signo"
+          />
         </div>
       </div>
     </>

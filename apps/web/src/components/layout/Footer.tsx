@@ -5,6 +5,7 @@ const productLinks = [
   { label: 'Horóscopo diario', to: '/horoscopo/diario' },
   { label: 'Horóscopo semanal', to: '/horoscopo/semanal' },
   { label: 'Horóscopo mensual', to: '/horoscopo/mensual' },
+  { label: 'Energía del día', to: '/energia-del-dia' },
   { label: 'Tarot', to: '/tarot/simple' },
   { label: 'Carta natal', to: '/carta-natal/basica' },
   { label: 'Compatibilidad', to: '/compatibilidad' },

@@ -57,7 +57,7 @@ export function periodStart(scope: Scope, isoDate: string): string {
   return `${isoDate.slice(0, 7)}-01`;
 }
 
-/** Inicio del período anterior (para el fallback cuando se supera el límite). */
+/** Inicio del período anterior (para fallback / contexto / limpieza). */
 export function previousPeriodStart(scope: Scope, isoPeriodStart: string): string {
   const d = parseUtc(isoPeriodStart);
   if (scope === 'daily') d.setUTCDate(d.getUTCDate() - 1);

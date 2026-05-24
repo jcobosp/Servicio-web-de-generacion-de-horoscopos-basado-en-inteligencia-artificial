@@ -1,5 +1,5 @@
 // Prompts, esquema de salida y configuración de longitud por scope.
-// Basado en docs/CONTENT_STRATEGY.md (secciones 3, 6 y 7).
+// Basado en docs/CONTENT_STRATEGY.md (secciones 2, 3, 6 y 7).
 
 export type Scope = 'daily' | 'weekly' | 'monthly';
 export type Area = 'general' | 'love' | 'health' | 'money' | 'work';
@@ -17,7 +17,7 @@ export const SIGN_NAMES: Record<SunSign, string> = {
 
 /** Área en español para el prompt. */
 export const AREA_ES: Record<Area, string> = {
-  general: 'general (visión global del día)',
+  general: 'general (visión global)',
   love: 'amor y relaciones',
   health: 'salud y bienestar',
   money: 'dinero y finanzas',
@@ -27,17 +27,14 @@ export const AREA_ES: Record<Area, string> = {
 /** Longitud objetivo y techo de tokens por scope (tabla de CONTENT_STRATEGY §3). */
 export const LENGTHS: Record<
   Scope,
-  { minWords: number; maxWords: number; maxOutputTokens: number; label: string }
+  { minWords: number; maxWords: number; maxOutputTokens: number; label: string; period: string }
 > = {
-  // maxOutputTokens con margen amplio: el texto va en JSON (claves, comillas) y
-  // el español gasta ~1.5 tokens/palabra. Sin "thinking" el coste real lo marca
-  // el contenido generado, no este techo.
-  daily: { minWords: 90, maxWords: 130, maxOutputTokens: 600, label: 'de hoy' },
-  weekly: { minWords: 180, maxWords: 240, maxOutputTokens: 900, label: 'de esta semana' },
-  monthly: { minWords: 320, maxWords: 420, maxOutputTokens: 1400, label: 'de este mes' },
+  daily: { minWords: 90, maxWords: 130, maxOutputTokens: 600, label: 'de hoy', period: 'el día de hoy' },
+  weekly: { minWords: 180, maxWords: 240, maxOutputTokens: 900, label: 'de esta semana', period: 'esta semana' },
+  monthly: { minWords: 320, maxWords: 420, maxOutputTokens: 1400, label: 'de este mes', period: 'este mes' },
 };
 
-export const TEMPERATURE = 0.85;
+export const TEMPERATURE = 0.9;
 
 /**
  * Esquema de salida estructurada (Gemini `responseSchema`). Usa la nomenclatura
@@ -81,11 +78,13 @@ interface PromptInput {
   weekday: string;
   /** Si true, refuerza las instrucciones tras un primer intento inválido. */
   reinforce?: boolean;
+  /** Lectura del periodo anterior (mismo signo/scope/área) para no repetir. */
+  previous?: { headline: string; body: string };
 }
 
-/** Construye el prompt del horóscopo según scope y área (CONTENT_STRATEGY §7). */
+/** Construye el prompt del horóscopo según scope y área (CONTENT_STRATEGY §2 y §7). */
 export function buildHoroscopePrompt(input: PromptInput): string {
-  const { scope, area, signName, date, weekday, reinforce } = input;
+  const { scope, area, signName, date, weekday, reinforce, previous } = input;
   const len = LENGTHS[scope];
   const needsDisclaimer = area === 'health' || area === 'money';
 
@@ -96,12 +95,16 @@ export function buildHoroscopePrompt(input: PromptInput): string {
         ? `- Semana que comienza el ${date}`
         : `- Mes que comienza el ${date}`;
 
+  const avoid = previous
+    ? `\nLECTURA DEL PERIODO ANTERIOR para ${signName} en ${AREA_ES[area]}. NO la repitas: cambia el enfoque, las imágenes, el consejo y el tono. Que se note que es una lectura nueva.\n- Titular anterior: "${previous.headline}"\n- Cuerpo anterior: "${previous.body}"\n`
+    : '';
+
   const reinforceLine = reinforce
     ? '\nIMPORTANTE: tu respuesta anterior no cumplió el formato o la extensión. ' +
       'Devuelve EXCLUSIVAMENTE JSON válido y respeta el número de palabras del cuerpo.'
     : '';
 
-  return `Eres un astrólogo experimentado que escribe horóscopos contemporáneos en español de España, con un tono cálido, cercano y simbólico. Tu objetivo es que el lector se sienta visto y comprendido, sin caer en banalidad ni en lenguaje arcaico.
+  return `Eres un astrólogo que escribe horóscopos contemporáneos en español de España. Tu objetivo es que ${signName} se sienta VISTO y comprendido al leerte, y que le ENGANCHE emocionalmente, sin caer en banalidad ni en lenguaje arcaico.
 
 CONTEXTO DEL LECTOR:
 - Signo solar: ${signName}
@@ -109,19 +112,22 @@ ${periodLine}
 - Área de la vida: ${AREA_ES[area]}
 - Horóscopo ${len.label}.
 
-INSTRUCCIONES DE ESTILO:
-- Trata al lector de "tú".
-- Usa frases que la mayoría de la gente pueda sentir como propias (universales pero personales en la forma): aplica validación subjetiva (efecto Forer) y lectura en frío con naturalidad.
-- Combina en el cuerpo: un reto o tensión del momento + un descubrimiento positivo + una acción concreta y mínima.
-- Mete símbolos sutiles del signo ${signName} y de su elemento.
-- Usa lenguaje sensorial (verbos físicos, elementos naturales).
-- Evita predicciones literales y comprobables (nada de "el martes te llamará tu jefe").
-- NUNCA diagnostiques enfermedades, prometas resultados económicos concretos, hables de la muerte de forma alarmista ni des consejos médicos, legales o financieros.
+TÉCNICAS PSICOLÓGICAS (aplícalas con naturalidad, sin nombrarlas nunca):
+- Efecto Forer/Barnum: afirmaciones que parecen muy personales pero casi cualquiera siente como propias ("últimamente cargas con más de lo que muestras").
+- Lectura en frío: intuiciones sobre patrones humanos comunes que el lector cree únicos suyos.
+- Anclaje emocional: nombra una emoción que muchos sienten en ${len.period} (ilusión, cansancio, esperanza, inquietud) y dale un marco que reconforte.
+- Polaridad equilibrada: un reto o tensión + un descubrimiento esperanzador + una acción pequeña y concreta.
+- Lenguaje sensorial y simbólico: verbos físicos (respira, suelta, abre) y símbolos del signo ${signName} y su elemento.
+- Específico-pero-no-medible: "una conversación reciente", "alguien cercano", sin predicciones comprobables.
+
+REGLAS:
+- Trata al lector de "tú". Tono cálido, cercano, emocionalmente evocador.
+- Prohibido: predicciones literales comprobables, diagnósticos médicos, promesas económicas concretas, alarmismo, consejos legales/médicos/financieros.
 - Extensión del cuerpo: alrededor de ${len.minWords}-${len.maxWords} palabras. Ni mucho menos ni mucho más.
-- "premium_hook": una frase que sugiera que hay una capa más profunda para quien quiera ir más allá (la verá un usuario que se plantea suscribirse a premium).
+- "premium_hook": una frase que sugiera que hay una capa más profunda para quien quiera ir más allá (la verá quien se plantea suscribirse a premium).
 ${needsDisclaimer
   ? '- Rellena "disclaimer" con: "Contenido astrológico de entretenimiento; no sustituye asesoramiento profesional."'
-  : '- Deja "disclaimer" como cadena vacía.'}${reinforceLine}
+  : '- Deja "disclaimer" como cadena vacía.'}${avoid}${reinforceLine}
 
 Responde EXCLUSIVAMENTE en JSON válido conforme al esquema indicado.`;
 }
