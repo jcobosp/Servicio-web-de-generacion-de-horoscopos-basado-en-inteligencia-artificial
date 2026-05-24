@@ -45,6 +45,9 @@ const MonthlyHoroscopePage = lazy(() =>
     default: m.MonthlyHoroscopePage,
   })),
 );
+const EnergyOfDayPage = lazy(() =>
+  import('@/pages/EnergyOfDayPage').then((m) => ({ default: m.EnergyOfDayPage })),
+);
 const DataPrivacyPage = lazy(() =>
   import('@/pages/DataPrivacyPage').then((m) => ({ default: m.DataPrivacyPage })),
 );
@@ -97,6 +100,8 @@ export const router = createBrowserRouter([
       { path: 'horoscopo/semanal/:sign', element: withSuspense(<WeeklyHoroscopePage />) },
       { path: 'horoscopo/mensual', element: withSuspense(<MonthlyHoroscopePage />) },
       { path: 'horoscopo/mensual/:sign', element: withSuspense(<MonthlyHoroscopePage />) },
+      { path: 'energia-del-dia', element: withSuspense(<EnergyOfDayPage />) },
+      { path: 'energia-del-dia/:sign', element: withSuspense(<EnergyOfDayPage />) },
 
       // Autenticación
       { path: 'login', element: withSuspense(<SignInPage />) },

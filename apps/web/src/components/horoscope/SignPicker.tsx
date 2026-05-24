@@ -1,29 +1,25 @@
 import { SignCard } from '@/components/zodiac/SignCard';
 import { ZODIAC, ZODIAC_SIGNS } from '@/lib/zodiac';
-import { SCOPE_META } from '@/features/horoscope/types';
-import type { Scope } from '@/features/horoscope/types';
+import type { ZodiacSign } from '@/lib/zodiac';
 
 interface SignPickerProps {
-  scope: Scope;
+  /** Construye el destino del enlace para cada signo. */
+  hrefFor: (slug: ZodiacSign) => string;
   title?: string;
 }
 
-/** Rejilla de los 12 signos que enlaza al horóscopo del scope indicado. */
-export function SignPicker({ scope, title }: SignPickerProps) {
-  const path = SCOPE_META[scope].path;
-
+/** Rejilla de los 12 signos que enlaza al destino indicado por signo. */
+export function SignPicker({ hrefFor, title }: SignPickerProps) {
   return (
     <section aria-label="Elegir signo">
-      {title && (
-        <h2 className="mb-4 font-display text-xl text-ink">{title}</h2>
-      )}
+      {title && <h2 className="mb-4 font-display text-xl text-ink">{title}</h2>}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         {ZODIAC_SIGNS.map((slug) => (
           <SignCard
             key={slug}
             sign={ZODIAC[slug]}
             size="sm"
-            to={`/horoscopo/${path}/${slug}`}
+            to={hrefFor(slug)}
           />
         ))}
       </div>

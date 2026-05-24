@@ -1,6 +1,14 @@
 import { Card } from '@/components/ui/Card';
 import { LinkButton } from '@/components/ui/Button';
-import type { Scope } from '@/features/horoscope/types';
+
+export type UpsellVariant =
+  | 'daily'
+  | 'weekly'
+  | 'monthly'
+  | 'energy'
+  | 'events'
+  | 'natal'
+  | 'tarot';
 
 interface UpsellCopy {
   title: string;
@@ -8,8 +16,8 @@ interface UpsellCopy {
   cta: string;
 }
 
-/** Copys de upsell por scope (MARKETING_STRATEGY §3). */
-const UPSELL: Record<Scope, UpsellCopy> = {
+/** Copys de upsell por contexto (MARKETING_STRATEGY §3). */
+const UPSELL: Record<UpsellVariant, UpsellCopy> = {
   daily: {
     title: 'Lo que las estrellas no te están contando aún',
     body: 'Tu lectura diaria es solo la superficie. Tu carta natal completa revela por qué tus relaciones, tu vocación y tus bloqueos siguen ese mismo patrón —y qué se mueve este año.',
@@ -25,16 +33,36 @@ const UPSELL: Record<Scope, UpsellCopy> = {
     body: 'En 30 días pasan cosas. En 365 cambia tu vida. El reporte anual premium analiza cada tránsito sobre tu carta natal y te dice cuándo mover ficha —y cuándo esperar.',
     cta: 'Quiero mi reporte anual',
   },
+  energy: {
+    title: 'Esta energía te afecta MÁS por tu carta',
+    body: 'La energía de hoy cae distinta sobre cada carta natal —y eso cambia lo que significa para ti. Suscríbete y recibe lecturas personalizadas por tus tránsitos.',
+    cta: 'Personalizar mis lecturas',
+  },
+  events: {
+    title: 'Esta energía te afecta MÁS por tu carta',
+    body: 'Los movimientos del cielo caen sobre una casa distinta en la carta de cada persona. Suscríbete y recibe alertas personalizadas por cada tránsito que te toca.',
+    cta: 'Personalizar mis alertas',
+  },
+  natal: {
+    title: 'Acabas de ver la portada',
+    body: 'Sol, Luna y Ascendente son el principio. Tu carta completa incluye 10 planetas, 12 casas y los aspectos entre ellos. Es el mapa que explica por qué eres tú.',
+    cta: 'Ver mi carta natal completa',
+  },
+  tarot: {
+    title: 'Una carta dice algo. Diez lo cuentan todo.',
+    body: 'La cruz celta es la tirada que los profesionales usan para leer una situación a fondo: pasado, presente, obstáculo, deseo y salida.',
+    cta: 'Tirada profesional de 10 cartas',
+  },
 };
 
 interface UpsellCardProps {
-  scope: Scope;
+  variant: UpsellVariant;
   /** Gancho generado por Gemini, alineado con lo que el lector acaba de leer. */
   premiumHook?: string | undefined;
 }
 
-export function UpsellCard({ scope, premiumHook }: UpsellCardProps) {
-  const copy = UPSELL[scope];
+export function UpsellCard({ variant, premiumHook }: UpsellCardProps) {
+  const copy = UPSELL[variant];
 
   return (
     <Card tone="premium" padding="lg" className="mt-8">
