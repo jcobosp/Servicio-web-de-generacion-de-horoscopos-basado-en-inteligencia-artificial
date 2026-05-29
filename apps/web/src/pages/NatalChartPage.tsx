@@ -9,6 +9,7 @@ import { AdSlot } from '@/components/ads/AdSlot';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { useProfile } from '@/features/profile/hooks';
 import { useGenerateNatalChart, useNatalChart } from '@/features/natal/hooks';
+import { useIsPremium } from '@/features/billing/hooks';
 import { searchCities } from '@/features/natal/cities';
 import type { City } from '@/features/natal/cities';
 import type { NatalChart, Placement } from '@/features/natal/types';
@@ -76,7 +77,7 @@ function PlacementCard({
   );
 }
 
-function ChartResult({ chart }: { chart: NatalChart }) {
+function ChartResult({ chart, isPremium }: { chart: NatalChart; isPremium: boolean }) {
   const i = chart.interpretation;
   return (
     <>
@@ -128,8 +129,31 @@ function ChartResult({ chart }: { chart: NatalChart }) {
         </div>
       </Card>
 
-      <UpsellCard variant="natal" premiumHook={i.premium_hook} />
-      <AdSlot className="mt-8" />
+      {isPremium ? (
+        <Card tone="premium" padding="lg" className="mt-8">
+          <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-gold-600">
+            <span aria-hidden="true">✨</span> Tu plan premium
+          </p>
+          <h3 className="mt-2 font-display text-2xl text-ink">
+            Esto es solo la portada de tu carta
+          </h3>
+          <p className="mt-3 max-w-2xl leading-relaxed text-graphite">
+            Tu carta completa incluye los 10 planetas, las 12 casas y los
+            aspectos entre ellos, con una lectura profunda de tu identidad,
+            emociones, vínculos y vocación.
+          </p>
+          <div className="mt-6">
+            <LinkButton to="/carta-natal/completa" variant="premium" size="lg">
+              Ver mi carta natal completa →
+            </LinkButton>
+          </div>
+        </Card>
+      ) : (
+        <>
+          <UpsellCard variant="natal" premiumHook={i.premium_hook} />
+          <AdSlot className="mt-8" />
+        </>
+      )}
     </>
   );
 }
@@ -196,6 +220,7 @@ export function NatalChartPage() {
   const { data: profile } = useProfile();
   const existing = useNatalChart();
   const gen = useGenerateNatalChart();
+  const isPremium = useIsPremium();
 
   const [birthTime, setBirthTime] = useState('');
   const [cityQuery, setCityQuery] = useState('');
@@ -279,7 +304,7 @@ export function NatalChartPage() {
           // calcula UNA sola vez por usuario (también blindado en el backend),
           // así que no ofrecemos regenerar.
           <div className="mt-8">
-            <ChartResult chart={chart} />
+            <ChartResult chart={chart} isPremium={isPremium} />
           </div>
         ) : (
           // No tiene carta: formulario para calcularla por primera vez.

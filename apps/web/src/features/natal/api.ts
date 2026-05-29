@@ -1,6 +1,15 @@
 import { FunctionsHttpError } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
-import type { NatalChart, NatalInterpretation, NatalParams, NatalResponse, Placement } from './types';
+import type {
+  FullNatalChart,
+  FullNatalInterpretation,
+  NatalChart,
+  NatalInterpretation,
+  NatalParams,
+  NatalResponse,
+  FullNatalResponse,
+  Placement,
+} from './types';
 
 /**
  * Invoca la generación de la carta natal básica. La función puede responder con
@@ -69,6 +78,71 @@ export async function fetchNatalChart(userId: string): Promise<NatalChart | null
     moon_approximate: planets.moon_approximate,
     has_time: !planets.moon_approximate,
     place: houses?.place ?? null,
+    interpretation,
+    created_at: data.created_at,
+  };
+}
+
+// --- Carta natal COMPLETA (premium) ----------------------------------------
+
+/**
+ * Invoca la generación de la carta natal completa. Como la básica, parseamos los
+ * cuerpos con código != 200 (403 `forbidden`, 400 `missing_data`) en vez de
+ * tratarlos como error genérico.
+ */
+export async function generateFullNatalChart(params: NatalParams): Promise<FullNatalResponse> {
+  const { data, error } = await supabase.functions.invoke<FullNatalResponse>(
+    'generate-full-natal-chart',
+    { body: params },
+  );
+
+  if (error) {
+    if (error instanceof FunctionsHttpError) {
+      try {
+        const parsed = await error.context.json();
+        if (parsed && typeof parsed.status === 'string') {
+          return parsed as FullNatalResponse;
+        }
+      } catch {
+        // cae al throw
+      }
+    }
+    throw error;
+  }
+  if (!data) throw new Error('Respuesta vacía de generate-full-natal-chart');
+  return data;
+}
+
+interface StoredFullBlob {
+  chart: Omit<FullNatalChart, 'place' | 'interpretation' | 'created_at'>;
+  place: string | null;
+}
+
+/** Carta natal completa guardada del usuario (una por usuario, no caduca). */
+export async function fetchFullNatalChart(userId: string): Promise<FullNatalChart | null> {
+  const { data, error } = await supabase
+    .from('natal_charts')
+    .select('planets, interpretation, created_at')
+    .eq('user_id', userId)
+    .eq('is_full', true)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) return null;
+
+  const blob = data.planets as unknown as StoredFullBlob;
+  let interpretation: FullNatalInterpretation;
+  try {
+    interpretation = JSON.parse(data.interpretation) as FullNatalInterpretation;
+  } catch {
+    return null;
+  }
+  if (!blob?.chart) return null;
+
+  return {
+    ...blob.chart,
+    place: blob.place ?? null,
     interpretation,
     created_at: data.created_at,
   };
