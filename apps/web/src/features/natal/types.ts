@@ -45,3 +45,61 @@ export interface NatalParams {
   tz?: string | null;
   place_label?: string | null;
 }
+
+// --- Carta natal COMPLETA (premium) ----------------------------------------
+
+/** Posición de un planeta en la carta completa. */
+export interface PlanetPosition extends Placement {
+  body: string;
+  name: string;
+  symbol: string;
+  house: number;
+  retrograde: boolean;
+}
+
+export interface HouseCusp {
+  house: number;
+  sign: ZodiacSign;
+  sign_name: string;
+}
+
+export interface Aspect {
+  a: string;
+  b: string;
+  a_name: string;
+  b_name: string;
+  type: string;
+  type_name: string;
+  symbol: string;
+  angle: number;
+  orb: number;
+}
+
+/** Narrativa generada por Gemini para la carta completa (6 bloques + cierre). */
+export interface FullNatalInterpretation {
+  identity: string;
+  emotional: string;
+  love: string;
+  vocation: string;
+  shadow: string;
+  year_ahead: string;
+  summary: string;
+}
+
+export interface FullNatalChart {
+  planets: PlanetPosition[];
+  ascendant: Placement;
+  midheaven: Placement;
+  houses: HouseCusp[];
+  aspects: Aspect[];
+  place: string | null;
+  interpretation: FullNatalInterpretation;
+  created_at: string;
+}
+
+export type FullNatalResponse =
+  | { status: 'ok'; cached: boolean; chart: FullNatalChart }
+  | { status: 'forbidden'; message: string }
+  | { status: 'missing_data'; message: string }
+  | { status: 'unavailable'; message: string }
+  | { status: 'error'; message: string };

@@ -49,10 +49,36 @@ export type Database = {
         }
         Relationships: []
       }
-      compatibility_reports: {
+      compatibility_credits: {
         Row: {
+          consumed_at: string | null
           created_at: string
           id: string
+          stripe_session_id: string | null
+          user_id: string
+        }
+        Insert: {
+          consumed_at?: string | null
+          created_at?: string
+          id?: string
+          stripe_session_id?: string | null
+          user_id: string
+        }
+        Update: {
+          consumed_at?: string | null
+          created_at?: string
+          id?: string
+          stripe_session_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      compatibility_reports: {
+        Row: {
+          billing: string
+          created_at: string
+          id: string
+          pair_key: string | null
           person_a: Json
           person_a_label: string
           person_b: Json
@@ -62,8 +88,10 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          billing?: string
           created_at?: string
           id?: string
+          pair_key?: string | null
           person_a: Json
           person_a_label: string
           person_b: Json
@@ -73,8 +101,10 @@ export type Database = {
           user_id: string
         }
         Update: {
+          billing?: string
           created_at?: string
           id?: string
+          pair_key?: string | null
           person_a?: Json
           person_a_label?: string
           person_b?: Json
@@ -256,6 +286,30 @@ export type Database = {
         }
         Relationships: []
       }
+      sign_compatibility: {
+        Row: {
+          content: Json
+          created_at: string
+          score: number
+          sign_a: string
+          sign_b: string
+        }
+        Insert: {
+          content: Json
+          created_at?: string
+          score: number
+          sign_a: string
+          sign_b: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          score?: number
+          sign_a?: string
+          sign_b?: string
+        }
+        Relationships: []
+      }
       streaks: {
         Row: {
           current_streak: number
@@ -277,6 +331,24 @@ export type Database = {
           longest_streak?: number
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      stripe_events: {
+        Row: {
+          id: string
+          received_at: string
+          type: string
+        }
+        Insert: {
+          id: string
+          received_at?: string
+          type: string
+        }
+        Update: {
+          id?: string
+          received_at?: string
+          type?: string
         }
         Relationships: []
       }

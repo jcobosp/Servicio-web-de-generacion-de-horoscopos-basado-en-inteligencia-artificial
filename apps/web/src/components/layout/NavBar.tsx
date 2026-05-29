@@ -17,6 +17,7 @@ const navItems: NavItem[] = [
   { label: 'Horóscopo', to: '/horoscopo/diario' },
   { label: 'Tarot', to: '/tarot/simple' },
   { label: 'Carta natal', to: '/carta-natal/basica' },
+  { label: 'Compatibilidad', to: '/compatibilidad' },
   { label: 'Premium', to: '/premium' },
 ];
 

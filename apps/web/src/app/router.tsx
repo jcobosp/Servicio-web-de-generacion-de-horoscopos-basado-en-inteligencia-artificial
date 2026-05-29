@@ -57,8 +57,31 @@ const TarotPage = lazy(() =>
 const NatalChartPage = lazy(() =>
   import('@/pages/NatalChartPage').then((m) => ({ default: m.NatalChartPage })),
 );
+const FullNatalChartPage = lazy(() =>
+  import('@/pages/FullNatalChartPage').then((m) => ({
+    default: m.FullNatalChartPage,
+  })),
+);
+const CompatibilityPage = lazy(() =>
+  import('@/pages/CompatibilityPage').then((m) => ({
+    default: m.CompatibilityPage,
+  })),
+);
+const SignCompatibilityPage = lazy(() =>
+  import('@/pages/SignCompatibilityPage').then((m) => ({
+    default: m.SignCompatibilityPage,
+  })),
+);
 const DataPrivacyPage = lazy(() =>
   import('@/pages/DataPrivacyPage').then((m) => ({ default: m.DataPrivacyPage })),
+);
+const PremiumPage = lazy(() =>
+  import('@/pages/PremiumPage').then((m) => ({ default: m.PremiumPage })),
+);
+const SubscriptionPage = lazy(() =>
+  import('@/pages/SubscriptionPage').then((m) => ({
+    default: m.SubscriptionPage,
+  })),
 );
 const LegalNoticePage = lazy(() =>
   import('@/pages/legal/LegalNoticePage').then((m) => ({
@@ -114,6 +137,7 @@ export const router = createBrowserRouter([
       { path: 'eventos-astrologicos', element: withSuspense(<AstroEventsPage />) },
       { path: 'tarot/simple', element: withSuspense(<TarotPage />) },
       { path: 'carta-natal/basica', element: withSuspense(<NatalChartPage />) },
+      { path: 'compatibilidad', element: withSuspense(<SignCompatibilityPage />) },
 
       // Autenticación
       { path: 'login', element: withSuspense(<SignInPage />) },
@@ -121,9 +145,17 @@ export const router = createBrowserRouter([
       { path: 'recuperar-contrasena', element: withSuspense(<ForgotPasswordPage />) },
       { path: 'restablecer-contrasena', element: withSuspense(<ResetPasswordPage />) },
 
+      // Premium (pública: invita a registrarse si no hay sesión)
+      { path: 'premium', element: withSuspense(<PremiumPage />) },
+
+      // Funcionalidades premium (requieren sesión; el PremiumGate valida el plan)
+      { path: 'carta-natal/completa', element: protect(<FullNatalChartPage />) },
+      { path: 'compatibilidad/avanzada', element: protect(<CompatibilityPage />) },
+
       // Cuenta (protegidas)
       { path: 'perfil', element: protect(<ProfilePage />) },
       { path: 'perfil/datos', element: protect(<DataPrivacyPage />) },
+      { path: 'perfil/suscripcion', element: protect(<SubscriptionPage />) },
 
       // Legales
       { path: 'aviso-legal', element: withSuspense(<LegalNoticePage />) },

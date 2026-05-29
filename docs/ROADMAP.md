@@ -169,24 +169,34 @@
 
 ---
 
-## Fase 8 — Stripe y plan premium
+## Fase 8 — Stripe y plan premium ✅
 
-- [ ] ⚠️ ACCIÓN MANUAL: crear cuenta en [Stripe](https://stripe.com), activar modo test y obtener `publishable key` y `secret key` (la secret va a Edge Functions). Pasos en `docs/INTEGRATIONS.md` → Stripe.
-- [ ] Crear producto en Stripe: "Zodiaq Premium" con dos precios: mensual y anual.
-- [ ] Crear Edge Function `create-checkout-session` (genera URL de Checkout para el usuario).
-- [ ] Crear Edge Function `stripe-webhook` que escucha `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted` y actualiza la tabla `subscriptions`.
-- [ ] Crear Edge Function `create-portal-session` (Customer Portal para gestionar suscripción).
-- [ ] Página `/premium` con plan, beneficios, precio, CTA.
-- [ ] Hook `useSubscription()` que lee la suscripción activa del usuario.
-- [ ] Componente `<PremiumGate />` que envuelve funcionalidades premium.
-- [ ] Página `/perfil/suscripcion` con estado, próxima factura, botón "Gestionar suscripción".
+- [x] ⚠️ ACCIÓN MANUAL: cuenta de Stripe en modo test conectada vía MCP (entorno de prueba "Zodiaq", `acct_1Tb22qL1iRYuy62n`). **Resuelto por el usuario**: `STRIPE_PUBLISHABLE_KEY` en `.env.local` y `STRIPE_SECRET_KEY`/`STRIPE_WEBHOOK_SECRET`/`STRIPE_PRICE_*`/`SITE_URL` como Secrets de Edge Functions; webhook registrado en Stripe.
+- [x] Crear producto en Stripe: "Zodiaq Premium" (`prod_UaCdVDWNgD6IFb`) con precio mensual 4,99 € (`price_1Tb2EnL1iRYuy62ndE0n6sjn`) y anual 49,99 € (`price_1Tb2ErL1iRYuy62nCNhQmArD`). Creados vía MCP.
+- [x] Migración 0012 `stripe_events_idempotency.sql`: tabla `stripe_events(id text pk, type, received_at)` con RLS para descartar eventos duplicados del webhook.
+- [x] Crear Edge Function `create-checkout-session` (verifica JWT, reutiliza/crea customer, genera Checkout hosted con metadata `user_id`+`plan`, locale `es`).
+- [x] Crear Edge Function `stripe-webhook` (firma verificada con `STRIPE_WEBHOOK_SECRET`; procesa `checkout.session.completed`, `customer.subscription.created|updated|deleted`, `invoice.payment_failed`; upsert idempotente en `subscriptions` con conflict `user_id`; idempotencia por `event.id`).
+- [x] Crear Edge Function `create-portal-session` (Customer Portal de Stripe, locale `es`).
+- [x] Hook `useSubscription()` (ya existía en Fase 7) + `useStartCheckout()` + `useOpenPortal()` en `features/billing/hooks.ts`. `features/billing/api.ts` con `createCheckoutSession(plan)` y `createPortalSession()`.
+- [x] Componente `<PremiumGate />` en `components/billing/PremiumGate.tsx` que envuelve funcionalidades premium con fallback a CTA de suscripción.
+- [x] Página `/premium` con planes mensual/anual destacados, beneficios, FAQ y CTA al checkout (`pages/PremiumPage.tsx`). Manejo de retorno `?status=cancelled`.
+- [x] Página `/perfil/suscripcion` con estado del plan, próxima renovación, botón "Gestionar suscripción" (Customer Portal) y refresco post-pago (`pages/SubscriptionPage.tsx`). Acceso desde el perfil con badge "Premium activo" / "Plan gratuito".
+- [x] **Verificación end-to-end por el usuario**: alta con tarjeta de test `4242 4242 4242 4242` → Checkout → webhook escribe en `subscriptions` (status `active`) → `/perfil/suscripcion` muestra el plan activo y "Gestionar suscripción" abre el Customer Portal. **Funciona perfectamente.**
+
+**Notas técnicas (Fase 8):**
+- Smoke test previo de las 3 Edge Functions confirmó despliegue y lectura de secrets (401 sin token / 400 sin firma, en lugar de 500 por config faltante).
+- Las claves de test viajaron por el chat; **recordatorio**: rotar `sk_test`/`whsec` antes de cualquier migración a producción (en test el riesgo es nulo).
+- Acciones manuales (publishable key en `.env.local`, secrets en Supabase, webhook en Stripe con los 5 eventos) **completadas por el usuario**.
 
 ---
 
 ## Fase 9 — Funcionalidades premium
 
-- [ ] `/carta-natal/completa` — interpretación detallada de las 12 casas y aspectos principales.
-- [ ] `/compatibilidad` — formulario para dos personas, devuelve sinastría narrada por Gemini.
+- [x] `/carta-natal/completa` — interpretación detallada de las 12 casas y aspectos principales. Edge Function `generate-full-natal-chart` (`verify_jwt=false`, valida JWT a mano): calcula los **10 planetas** (Sol→Plutón, con retrógrados), **Medio Cielo** y **12 casas** por sistema de **signos enteros** (whole-sign, robusto sin fallos por latitud) y **aspectos mayores** con `astronomy-engine@2.1.19` server-side. **Verifica premium EN EL BACKEND** (active/trialing) y **generación única por usuario** blindada (si ya existe, la devuelve sin volver a llamar a Gemini). **Coherencia**: pasa a Gemini el texto de la carta básica para ampliarlo sin contradecirlo (regla #7 CLAUDE.md). Salida en 6 secciones + síntesis (1200-1800 palabras, temp 0.7, maxOutputTokens 4096). Guarda en `natal_charts` (is_full=true, no caduca). Frontend: `features/natal/` (tipos+api+hooks `useFullNatalChart`/`useGenerateFullNatalChart`), `pages/FullNatalChartPage.tsx` envuelta en `<PremiumGate>` con formulario hora+ciudad (prefill desde perfil) y resultado (mapa planetario + casas + aspectos + narrativa). Ruta `/carta-natal/completa` (protegida). Acceso directo desde la carta básica para usuarios premium. typecheck/lint/build OK.
+- [x] `/compatibilidad/avanzada` — **"Compatibilidad avanzada"** (premium), formulario para dos personas, sinastría narrada por Gemini. Edge Function `generate-compatibility` (`verify_jwt=false`): calcula Sol/Luna/Mercurio/Venus/Marte (+Ascendente si hay hora) de **ambas personas** con `astronomy-engine`, computa **aspectos de sinastría cruzados** y un **score de afinidad determinista** (elementos + aspectos, sesgo "feel good" 55-98). **Premium en backend** + **dedupe por `pair_key`** simétrico (migración 0013) → re-consultar la misma pareja devuelve el informe guardado sin gastar tokens ni cuota. La hora/lugar son **opcionales**. Gemini narra 6 bloques (conexión, emoción, amor, roces, largo plazo, consejo), 900-1300 palabras, temp 0.75.
+  - **Cuota (modelo de créditos, migración 0014):** columna `billing` en `compatibility_reports` ('included'|'paid') + tabla `compatibility_credits`. Cada premium tiene **1 generación incluida por mes natural**; agotada, devuelve `payment_required` (402). Generaciones extra a **1,99 €** por pago puntual (Stripe Checkout mode `payment`, función `create-compatibility-payment`); el `stripe-webhook` concede 1 crédito por pago (idempotente por `stripe_session_id`). Cada informe nuevo consume incluida-del-mes o un crédito (se marca `billing` y se consume el crédito tras guardar). Acceso permanente a todo el historial.
+  - Frontend: `features/compatibility/` (tipos+api+hooks: `useGenerateCompatibility`, `useCompatibilityHistory`, `useCompatibilityQuota`, `useBuyCompatibilityCredit`), `pages/CompatibilityPage.tsx` con `<PremiumGate>`, formulario de 2 personas (A pre-rellenada del perfil), banner de cuota, botón "Generar otra por 1,99 €" cuando se agota, manejo de retorno `?status=paid/cancelled`, resultado (score + posiciones + aspectos + narrativa) e historial. Ruta `/compatibilidad/avanzada` (protegida). Accesos directos desde `/perfil/suscripcion`. typecheck/lint/build OK.
+- [x] **Compatibilidad GRATUITA** (`/compatibilidad`, pública) — funcionalidad freemium separada de la avanzada: el usuario elige **2 signos** y consulta su compatibilidad. Contenido **100% estático en BBDD, sin Gemini**: tabla `sign_compatibility` (migración 0015, lectura pública por RLS) con las **78 combinaciones** (12 signos entre sí, incluido mismo signo), sembradas a mano vía generador determinista (`supabase/seed/gen-sign-compatibility.mjs` + `0016_seed_sign_compatibility.sql`). Cada combo tiene **score 40-95 coherente con el aspecto astrológico** (cuadratura/quincuncio bajos, trígono/sextil altos, espejo/oposición medios; spread real: 25 bajas / 17 medias / 36 altas) y campos típicos de webs de horóscopo (headline, overview, amor, pasión, comunicación, lo que une, retos, consejo) con técnicas Forer/psicológicas. Frontend `features/sign-compat/` + `pages/SignCompatibilityPage.tsx` (2 `Select`, resultado, `AdSlot`, **card de marketing hacia `/compatibilidad/avanzada`**). Enlace en NavBar. typecheck/lint/build OK.
 - [ ] `/reportes/mensual` y `/reportes/anual` — informes largos personalizados.
 - [ ] `/tarot/avanzado` — tiradas complejas (cruz celta, herradura).
 - [ ] `/numerologia` — cálculo de números clave + interpretación.

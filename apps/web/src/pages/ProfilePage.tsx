@@ -11,6 +11,7 @@ import { useAuth } from '@/features/auth/AuthProvider';
 import { signOut } from '@/features/auth/api';
 import { useProfile, useUpdateProfile } from '@/features/profile/hooks';
 import type { Profile } from '@/features/profile/hooks';
+import { useSubscription } from '@/features/billing/hooks';
 import { ZODIAC } from '@/lib/zodiac';
 import type { ZodiacSign } from '@/lib/zodiac';
 
@@ -74,6 +75,10 @@ export function ProfilePage() {
   const navigate = useNavigate();
   const { user, emailConfirmed } = useAuth();
   const { data: profile, isLoading } = useProfile();
+  const { data: subscription } = useSubscription();
+  const isPremium = Boolean(
+    subscription && ['active', 'trialing'].includes(subscription.status),
+  );
 
   async function onLogout() {
     await signOut();
@@ -140,6 +145,30 @@ export function ProfilePage() {
             </Card>
 
             <AccountForm profile={profile} email={user?.email ?? ''} />
+
+            <Card padding="lg">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <CardTitle>Suscripción</CardTitle>
+                {isPremium ? (
+                  <Badge tone="premium">Premium activo</Badge>
+                ) : (
+                  <Badge tone="neutral">Plan gratuito</Badge>
+                )}
+              </div>
+              <p className="mt-2 text-sm text-graphite">
+                {isPremium
+                  ? 'Gestiona tu plan, cambia entre mensual y anual o consulta tus facturas.'
+                  : 'Suscríbete para desbloquear la carta natal completa, compatibilidad avanzada, reportes personalizados y la experiencia sin anuncios.'}
+              </p>
+              <div className="mt-4">
+                <Link
+                  to={isPremium ? '/perfil/suscripcion' : '/premium'}
+                  className="text-sm font-medium text-cosmos-700 hover:underline"
+                >
+                  {isPremium ? 'Gestionar mi suscripción →' : 'Ver planes premium →'}
+                </Link>
+              </div>
+            </Card>
 
             <Card padding="lg">
               <CardTitle>Privacidad y datos</CardTitle>
