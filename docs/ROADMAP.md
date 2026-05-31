@@ -224,6 +224,89 @@
 
 ---
 
+## Fase 10.5 — Rediseño visual (Frontend moderno) 🎨
+
+> **Fase intermedia (previa a la 11), 100 % VISUAL.** Reconstruye la capa de presentación para que la plataforma quede como un producto listo para publicar: moderna, con animaciones, visualmente adictiva y profesional. **No cambia NADA de la lógica de las funcionalidades, ni los contratos de las Edge Functions, ni el modelo de datos, ni el routing funcional, ni la lógica de Stripe/Supabase/Gemini.** Respeta y conserva todo lo de las fases anteriores: **SEO** (metadatos `<Seo>`, Schema.org, sitemap, robots), **rendimiento** (lazy routes, code-splitting, fuentes async), **legal** (banner de cookies, modelo consent-or-pay, páginas legales), y el **mecanismo de AdSense** (incl. la imagen de ejemplo). Si un cambio visual amenaza algo de esto, se adapta sin romperlo.
+
+### Decisiones tomadas (no volver a preguntar)
+- **Animaciones:** `framer-motion` (paquete `motion`) para reveals al hacer scroll, aparición de cards, transiciones y micro-interacciones + CSS para lo simple. Siempre respetando `prefers-reduced-motion`.
+- **Tipografía:** **Space Grotesk** (display, titulares grandes y contrastados) + **Inter** (texto). Google Fonts, carga async como ya está.
+- **Iconos / arte:** **Lucide** (`lucide-react`, MIT) para la UI funcional + **arte cósmico propio** (gradientes, constelaciones SVG, estrellas, auras) por funcionalidad. **Prohibido** usar los glifos genéricos del zodiaco (♈♉…) como recurso visual principal.
+- **Ejecución:** por secciones; el usuario revisa/aprueba cada sección antes de pasar a la siguiente.
+
+### Principios de diseño (aplican a TODAS las tareas)
+1. **Fondo blanco** + secciones/funcionalidades en **cards** modernas con colores vivos y temáticos (cada funcionalidad con su identidad visual propia y distinta).
+2. **Contraste accesible (AA)**: nada de combinaciones que no se vean en pantallas con brillo alto o poca energía (p. ej. **gris claro sobre blanco prohibido**). Texto siempre legible.
+3. **Aprovechar todo el ancho**: layouts a sangre (full-bleed), composiciones **asimétricas** y creativas, nada de "todo centrado y estrecho".
+4. **Jerarquía tipográfica fuerte**: jugar con tamaños y pesos muy contrastados (titulares enormes, kicker, cuerpo).
+5. **Animaciones que enganchan**: aparición progresiva al hacer scroll, micro-interacciones en hover/focus, transiciones suaves; sin marear (reduced-motion).
+6. **Cada pestaña tiene su HERO SECTION** arriba (impactante, con copy de marketing/psicológico) y debajo el resto del contenido.
+7. **Copys nuevos** de marketing y técnicas psicológicas (Forer, intriga, prueba social, urgencia suave) donde aporten — sin tocar el contenido generado por Gemini.
+8. **Loaders/visualizaciones temáticas** mientras se genera contenido (animación cósmica, no un spinner soso).
+9. **Routing por estado de usuario** intacto: cada CTA lleva a donde corresponde según anónimo / gratuito / premium.
+10. **Quitar "beta"** y cualquier texto/placeholder con pinta de no-producción: la plataforma debe parecer ya publicada.
+
+### 10.5.0 — Cimientos: sistema de diseño y primitivas ✅
+- [x] Instaladas dependencias aprobadas: `framer-motion` + `lucide-react` (0 vulnerabilidades). `framer-motion` cae en el chunk `vendor` catch-all; `lucide-react` se tree-shakea hasta usarlo.
+- [x] Tokens de diseño ampliados (`src/index.css` `@theme`): display **Space Grotesk** + Inter; `silver` oscurecido (#94a3b8→#64748b) para **contraste AA** sobre blanco; **8 familias temáticas** por funcionalidad (cosmos/tarot/astral/amor/numen/energy/celeste/gold, tonos 50/100/500/600/700, los 600/700 AA para texto); sombras `shadow-soft`/`shadow-lift`; utilidades `text-gradient`/`border-gradient`/`bg-animated`; animaciones como tokens `--animate-*` (float, twinkle, gradient-pan, shimmer, pulse-glow, spin-slow) + sus `@keyframes`. Verificado que las utilidades `animate-*` se generan en el CSS.
+- [x] **Space Grotesk** cargada en `index.html` (async, reemplaza a Fraunces, junto a Inter) y mapeada como `--font-display`.
+- [x] Primitivas de animación: `src/components/motion/Reveal.tsx` (`<Reveal>` scroll-reveal direccional, `<RevealStagger>`+`<RevealItem>` en cascada) con Framer Motion `whileInView`; hook `src/hooks/usePrefersReducedMotion.ts`. Todas **no-op con `prefers-reduced-motion`** (omiten props de animación, no pasan `undefined` por `exactOptionalPropertyTypes`).
+- [x] Layout moderno: `src/components/layout/Section.tsx` (`<Section>` full-bleed con contenedor `narrow/default/wide/full` —`wide`=max-w-7xl para aprovechar ancho— y `<Bleed>` a sangre de viewport).
+- [x] Arte cósmico: `src/components/visual/CosmicBackground.tsx` (`<CosmicBackground variant intensity stars>`: blobs de gradiente flotantes + estrellas parpadeantes, por tema; decorativo `aria-hidden`, `-z-10`).
+- [x] `<Hero>` (`src/components/visual/Hero.tsx`): kicker + titular grande + subtítulo + CTAs + arte, composición **asimétrica** (texto izq. / arte der.) con fondo cósmico y entrada animada, parametrizable por `ThemeKey`. Sistema de temas central en `src/lib/feature-theme.ts` (`FEATURE_THEMES`/`featureTheme`).
+- [x] UI base renovada manteniendo API: `Card` (+ tonos `glass`/`glow`, `shadow-soft`, lift al hover), `Button` (micro-interacciones: lift + scale en primary/secondary/premium), `Skeleton` (shimmer en vez de pulse). `Badge`/`Input`/`Select` ya cumplían contraste AA, sin cambios.
+- [x] `<GeneratingLoader>` (`src/components/feedback/GeneratingLoader.tsx`): núcleo luminoso que late + órbita giratoria con estrellas + mensaje, temático por `variant`; accesible (`role=status`, `aria-live`).
+- [x] Quitado el badge **"beta"** de la NavBar (y su import huérfano). typecheck/lint/build OK.
+
+### 10.5.1 — Layout global (NavBar, Footer, transiciones) ✅
+- [x] **NavBar moderna** (`components/layout/NavBar.tsx`): full-width (max-w-7xl), blur sticky con `shadow-soft`, **logo nuevo** (`components/layout/Logo.tsx`: orbe gradiente + `Sparkles` de Lucide + wordmark display, reutilizable, prop `tone` light/dark), **indicador activo animado** (subrayado con `layoutId="nav-underline"` que se desliza entre items vía Framer Motion; versión estática si reduced-motion), CTA premium destacada (gold + Sparkles), iconos Lucide (`Menu`/`X`/`Flame`), **menú móvil animado** (`AnimatePresence` height/opacity, spread condicional por `exactOptionalPropertyTypes`). Prefetch de rutas conservado. Badge "beta" eliminado. Copys CTA actualizados ("Empezar gratis").
+- [x] **Footer moderno** (`components/layout/Footer.tsx`): fondo oscuro degradado (ink→cosmos-900) con **"Zodiaq" gigante a sangre como watermark** (bg-clip-text, ~22-26vw), 4 columnas (marca, Funcionalidades, Explora, Legal + configurar cookies), **newsletter visual** (input + botón, estado "gracias" local, SIN backend nuevo), redes (Instagram SVG inline —Lucide deprecó iconos de marca—, TikTok, X), **badges de confianza** (cifrado AES-256, RGPD, IA Gemini con iconos Lucide), estrellas decorativas, copyright dinámico. Contraste AA: texto slate-300/white sobre fondo oscuro.
+- [x] **Transición de página** (`components/layout/PageTransition.tsx`): fundido+desplazamiento de entrada por ruta (`key={pathname}`, sin `AnimatePresence` para no chocar con Suspense de rutas lazy), no-op con reduced-motion. **`<ScrollToTop>`** (`components/layout/ScrollToTop.tsx`) resetea el scroll al cambiar de ruta. Ambos integrados en `Layout.tsx`. typecheck/lint/build OK.
+
+### 10.5.2 — Home page (larga, scroll-reveal, profesional) ✅
+- [x] **Hero** con `<Hero>` (full-bleed asimétrico, fondo cósmico, entrada animada): kicker con icono, titular grande con palabra en gradiente, subcopy marketing, **CTAs según estado** (anónimo→Empezar gratis/Ver Premium; logueado free→Mi horóscopo/Hazte Premium; premium→Mi horóscopo/Mi carta natal) y **`<HeroArt>`** decorativo (cards flotantes de horóscopo/energía/tarot con `animate-float`, oculto en móvil).
+- [x] **12 cards de funcionalidad** (7 gratuitas + 5 premium), cada una con su **tema de color** (`feature-theme`), icono Lucide en orbe gradiente, copy psicológico y aparición en cascada (`RevealStagger`/`RevealItem`). **Routing por estado** en `<FeatureCard>`: gratuitas→su página; premium→su página si `useIsPremium()`, si no→`/premium`; CTA dinámico (Probar/Abrir/Desbloblequear). Sustituida la rejilla de glifos del zodiaco por una **tira de chips de texto por signo** (enlaces SEO a `/horoscopo/diario/:sign`, sin glifos genéricos).
+- [x] **3 `<AdSlot>`** intercalados (tras gratuitas, tras premium, tras testimonios), en `<Section>` propias para que respiren.
+- [x] Secciones profesionales: tira de stats (datos veraces, no inventados), **"cómo funciona"** en 3 pasos, gratuitas, premium, **comparativa free vs premium** (teaser → `/premium`), **testimonios** (prueba social), **FAQ** (`<details>` animado) y **CTA final** de conversión con fondo cósmico. Copys con técnicas de marketing/psicología.
+- [x] SEO intacto: `<Seo>` + JsonLd (WebSite/Organization) conservados, **un solo `<h1>`** (en el Hero) y `<h2>` por sección con `aria-labelledby`, enlaces internos por signo. typecheck/lint/build OK (HomePage chunk 7,26 kB gzip).
+
+### 10.5.3 — Autenticación (login / registro / recuperar / restablecer)
+- [ ] Rediseño moderno y colorido **jugando con el nombre Zodiaq** (display gigante, gradientes, arte cósmico), layout **split asimétrico** (arte a un lado, formulario al otro), animaciones de entrada y de validación. Lógica de auth y validaciones **Zod intactas**.
+
+### 10.5.4 — Funcionalidades gratuitas (cada una con diseño propio)
+> Para cada una: Hero propio + explicación breve + el contenido/funcionalidad, con su **tema visual único**, scroll-reveal y `<GeneratingLoader>` temático al generar. **Gate de anónimo:** si el usuario NO está registrado, ve el hero + explicación + el formulario/UI, pero al pulsar "generar" se le redirige a **/login** sin llegar a generar nada (funnel de registro). **Conservando el SEO:** el contenido indexable que hoy se muestra a anónimos (p. ej. horóscopo por signo) se mantiene visible para no perder posicionamiento; el gate aplica a la acción de generar bajo demanda. Resolver caso por caso en implementación.
+- [ ] Horóscopo diario/semanal/mensual (`HoroscopeView` + `AreaTabs`): tema "tiempo/tránsito".
+- [ ] Energía del día: tema "medidor de energía" con visualización del nivel 1-10.
+- [ ] Eventos astrológicos: tema "timeline / calendario celeste".
+- [ ] Tarot simple: tema "cartas" con animación de barajado/volteo.
+- [ ] Carta natal básica: tema "mapa estelar / rueda".
+- [ ] Compatibilidad gratuita (signos): tema "dos energías que se encuentran".
+- [ ] Numerología gratuita: tema "números / geometría sagrada".
+
+### 10.5.5 — Funcionalidades premium (cada una con diseño propio)
+> Igual que las gratuitas (hero, tema único, reveal, loader temático) + `<PremiumGate>` y banners de cuota rediseñados. Lógica premium/créditos/Stripe **intacta**.
+- [ ] Carta natal completa: rueda natal visual.
+- [ ] Compatibilidad avanzada: sinastría visual entre dos personas.
+- [ ] Reportes mensual/anual: tema "informe editorial premium".
+- [ ] Tarot avanzado: tiradas visuales (Cruz Celta / Herradura con posiciones).
+- [ ] Numerología avanzada.
+- [ ] Página `/premium`: pricing moderno, comparativa de planes, FAQ, prueba social.
+- [ ] `/perfil`, `/perfil/datos`, `/perfil/suscripcion`: estilos nuevos aplicados.
+
+### 10.5.6 — Legales y secundarias
+- [ ] `LegalPage` con hero + estilos modernos manteniendo legibilidad (el **texto legal no se toca**).
+- [ ] 404 renovada y on-brand.
+- [ ] Banner/preferencias de cookies con el nuevo estilo (lógica de consentimiento y modelo consent-or-pay **intactos**).
+
+### 10.5.7 — Pulido transversal, accesibilidad y verificación
+- [ ] Auditoría de contraste AA en todo (eliminar grises ilegibles sobre blanco, etc.).
+- [ ] `prefers-reduced-motion` respetado en todas las animaciones.
+- [ ] Responsive verificado en todos los breakpoints, usando todo el ancho.
+- [ ] Re-verificar que **SEO** (metadatos/Schema/sitemap/robots), **rendimiento** (Lighthouse no se hunde por las animaciones; medir de nuevo) y **legal** siguen OK.
+- [ ] `typecheck` / `lint` / `build` limpios y confirmación de que **ninguna lógica de funcionalidad cambió** (solo capa visual + gate de anónimo).
+
+---
+
 ## Fase 11 — Calidad, testing y pulido final
 
 - [ ] Tests unitarios de funciones críticas (`getZodiacSign`, cálculo de rachas, cliente de Gemini).

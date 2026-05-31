@@ -22,7 +22,7 @@ export function Skeleton({
       role="status"
       aria-hidden="true"
       className={cn(
-        'animate-pulse bg-gradient-to-r from-mist via-slate-100 to-mist bg-[length:200%_100%]',
+        'animate-shimmer bg-gradient-to-r from-mist via-slate-200 to-mist bg-[length:200%_100%]',
         roundings[rounded],
         className,
       )}
