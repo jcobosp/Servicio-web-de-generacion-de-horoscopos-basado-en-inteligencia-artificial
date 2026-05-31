@@ -197,6 +197,46 @@ Deno.serve(async (req) => {
               throw new Error(creditErr.message);
             }
           }
+        } else if (
+          session.mode === 'payment' &&
+          session.metadata?.kind === 'advanced_tarot_extra' &&
+          session.payment_status === 'paid'
+        ) {
+          // Pago puntual de una tirada extra del Tarot avanzado: concede un
+          // crédito DEL TIPO comprado. Idempotente por `stripe_session_id`.
+          const buyerId = session.metadata.user_id;
+          const spread =
+            session.metadata.spread === 'horseshoe' ? 'horseshoe' : 'celtic_cross';
+          if (buyerId) {
+            const { error: creditErr } = await admin
+              .from('advanced_tarot_credits')
+              .insert({
+                user_id: buyerId,
+                spread_type: spread,
+                stripe_session_id: session.id,
+              });
+            // 23505 = ya concedido (reintento del webhook): no es error.
+            if (creditErr && creditErr.code !== '23505') {
+              throw new Error(creditErr.message);
+            }
+          }
+        } else if (
+          session.mode === 'payment' &&
+          session.metadata?.kind === 'numerology_extra' &&
+          session.payment_status === 'paid'
+        ) {
+          // Pago puntual de una lectura extra de Numerología personal: concede
+          // un crédito. Idempotente por `stripe_session_id` (único).
+          const buyerId = session.metadata.user_id;
+          if (buyerId) {
+            const { error: creditErr } = await admin
+              .from('numerology_credits')
+              .insert({ user_id: buyerId, stripe_session_id: session.id });
+            // 23505 = ya concedido (reintento del webhook): no es error.
+            if (creditErr && creditErr.code !== '23505') {
+              throw new Error(creditErr.message);
+            }
+          }
         }
         break;
       }

@@ -19,6 +19,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      advanced_tarot_credits: {
+        Row: {
+          consumed_at: string | null
+          created_at: string
+          id: string
+          spread_type: string
+          stripe_session_id: string | null
+          user_id: string
+        }
+        Insert: {
+          consumed_at?: string | null
+          created_at?: string
+          id?: string
+          spread_type: string
+          stripe_session_id?: string | null
+          user_id: string
+        }
+        Update: {
+          consumed_at?: string | null
+          created_at?: string
+          id?: string
+          spread_type?: string
+          stripe_session_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       astro_events: {
         Row: {
           created_at: string
@@ -238,6 +265,111 @@ export type Database = {
         }
         Relationships: []
       }
+      numerology_credits: {
+        Row: {
+          consumed_at: string | null
+          created_at: string
+          id: string
+          stripe_session_id: string | null
+          user_id: string
+        }
+        Insert: {
+          consumed_at?: string | null
+          created_at?: string
+          id?: string
+          stripe_session_id?: string | null
+          user_id: string
+        }
+        Update: {
+          consumed_at?: string | null
+          created_at?: string
+          id?: string
+          stripe_session_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      numerology_meanings: {
+        Row: {
+          category: string
+          content: Json
+          created_at: string
+          number: number
+        }
+        Insert: {
+          category: string
+          content: Json
+          created_at?: string
+          number: number
+        }
+        Update: {
+          category?: string
+          content?: Json
+          created_at?: string
+          number?: number
+        }
+        Relationships: []
+      }
+      numerology_readings: {
+        Row: {
+          billing: string
+          created_at: string
+          focus: string | null
+          id: string
+          numbers: Json
+          reading: string
+          user_id: string
+        }
+        Insert: {
+          billing?: string
+          created_at?: string
+          focus?: string | null
+          id?: string
+          numbers: Json
+          reading: string
+          user_id: string
+        }
+        Update: {
+          billing?: string
+          created_at?: string
+          focus?: string | null
+          id?: string
+          numbers?: Json
+          reading?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      premium_reports: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          kind: string
+          period_start: string
+          report: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data: Json
+          id?: string
+          kind: string
+          period_start: string
+          report: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          kind?: string
+          period_start?: string
+          report?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -393,6 +525,7 @@ export type Database = {
       }
       tarot_readings: {
         Row: {
+          billing: string
           cards: Json
           created_at: string
           id: string
@@ -403,6 +536,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          billing?: string
           cards: Json
           created_at?: string
           id?: string
@@ -413,6 +547,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          billing?: string
           cards?: Json
           created_at?: string
           id?: string

@@ -54,6 +54,11 @@ const AstroEventsPage = lazy(() =>
 const TarotPage = lazy(() =>
   import('@/pages/TarotPage').then((m) => ({ default: m.TarotPage })),
 );
+const AdvancedTarotPage = lazy(() =>
+  import('@/pages/AdvancedTarotPage').then((m) => ({
+    default: m.AdvancedTarotPage,
+  })),
+);
 const NatalChartPage = lazy(() =>
   import('@/pages/NatalChartPage').then((m) => ({ default: m.NatalChartPage })),
 );
@@ -67,9 +72,27 @@ const CompatibilityPage = lazy(() =>
     default: m.CompatibilityPage,
   })),
 );
+const MonthlyReportPage = lazy(() =>
+  import('@/pages/ReportsPage').then((m) => ({
+    default: m.MonthlyReportPage,
+  })),
+);
+const AnnualReportPage = lazy(() =>
+  import('@/pages/ReportsPage').then((m) => ({
+    default: m.AnnualReportPage,
+  })),
+);
 const SignCompatibilityPage = lazy(() =>
   import('@/pages/SignCompatibilityPage').then((m) => ({
     default: m.SignCompatibilityPage,
+  })),
+);
+const NumerologyPage = lazy(() =>
+  import('@/pages/NumerologyPage').then((m) => ({ default: m.NumerologyPage })),
+);
+const AdvancedNumerologyPage = lazy(() =>
+  import('@/pages/AdvancedNumerologyPage').then((m) => ({
+    default: m.AdvancedNumerologyPage,
   })),
 );
 const DataPrivacyPage = lazy(() =>
@@ -138,6 +161,7 @@ export const router = createBrowserRouter([
       { path: 'tarot/simple', element: withSuspense(<TarotPage />) },
       { path: 'carta-natal/basica', element: withSuspense(<NatalChartPage />) },
       { path: 'compatibilidad', element: withSuspense(<SignCompatibilityPage />) },
+      { path: 'numerologia', element: withSuspense(<NumerologyPage />) },
 
       // Autenticación
       { path: 'login', element: withSuspense(<SignInPage />) },
@@ -149,8 +173,12 @@ export const router = createBrowserRouter([
       { path: 'premium', element: withSuspense(<PremiumPage />) },
 
       // Funcionalidades premium (requieren sesión; el PremiumGate valida el plan)
+      { path: 'tarot/avanzado', element: protect(<AdvancedTarotPage />) },
+      { path: 'numerologia/avanzada', element: protect(<AdvancedNumerologyPage />) },
       { path: 'carta-natal/completa', element: protect(<FullNatalChartPage />) },
       { path: 'compatibilidad/avanzada', element: protect(<CompatibilityPage />) },
+      { path: 'reportes/mensual', element: protect(<MonthlyReportPage />) },
+      { path: 'reportes/anual', element: protect(<AnnualReportPage />) },
 
       // Cuenta (protegidas)
       { path: 'perfil', element: protect(<ProfilePage />) },

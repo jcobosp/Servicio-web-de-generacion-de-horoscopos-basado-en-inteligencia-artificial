@@ -15,6 +15,7 @@ import { searchCities } from '@/features/natal/cities';
 import type { City } from '@/features/natal/cities';
 import type { FullNatalChart, PlanetPosition } from '@/features/natal/types';
 import { ZODIAC } from '@/lib/zodiac';
+import { decodeByteaText } from '@/lib/bytea';
 import { company } from '@/features/legal/company';
 
 function formatDeg(deg: number): string {
@@ -207,10 +208,12 @@ function FullChartBody() {
   const [prefilledFor, setPrefilledFor] = useState<string | null>(null);
   if (profile && profile.id !== prefilledFor) {
     setPrefilledFor(profile.id);
-    if (profile.birth_time) setBirthTime(profile.birth_time.slice(0, 5));
-    if (profile.birth_place) {
-      setCityQuery(profile.birth_place);
-      const match = searchCities(profile.birth_place, 1)[0];
+    const time = decodeByteaText(profile.birth_time);
+    const placeName = decodeByteaText(profile.birth_place);
+    if (time) setBirthTime(time.slice(0, 5));
+    if (placeName) {
+      setCityQuery(placeName);
+      const match = searchCities(placeName, 1)[0];
       if (match) setSelectedCity(match);
     }
   }

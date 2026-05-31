@@ -59,9 +59,11 @@ interface UpsellCardProps {
   variant: UpsellVariant;
   /** Gancho generado por Gemini, alineado con lo que el lector acaba de leer. */
   premiumHook?: string | undefined;
+  /** Destino del CTA (por defecto la página de planes premium). */
+  to?: string;
 }
 
-export function UpsellCard({ variant, premiumHook }: UpsellCardProps) {
+export function UpsellCard({ variant, premiumHook, to = '/premium' }: UpsellCardProps) {
   const copy = UPSELL[variant];
 
   return (
@@ -80,7 +82,7 @@ export function UpsellCard({ variant, premiumHook }: UpsellCardProps) {
         {premiumHook ? premiumHook : copy.body}
       </p>
       <div className="mt-6 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-        <LinkButton to="/premium" variant="premium" size="lg">
+        <LinkButton to={to} variant="premium" size="lg">
           {copy.cta} →
         </LinkButton>
         <span className="text-sm text-silver">desde 4,99 €/mes · cancela cuando quieras</span>
