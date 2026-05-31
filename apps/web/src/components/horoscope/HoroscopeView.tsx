@@ -82,6 +82,7 @@ export function HoroscopeView({ scope }: HoroscopeViewProps) {
           <div className="mt-8">
             <SignPicker hrefFor={(slug) => `/horoscopo/${meta.path}/${slug}`} />
           </div>
+          <AdSlot className="mt-10" />
         </div>
       </>
     );

@@ -75,18 +75,28 @@ Cookies usadas en el proyecto:
 | Google Analytics (si se usa) | Analítica | Métricas de uso | **Sí** |
 | Stripe | Técnica (pago en sesión) | Procesar pago | No (cuando se inicia el checkout) |
 
-### Banner de cookies
+### Banner de cookies — modelo «consentir o suscribirse» (consent or pay)
 
-- Aparece en la primera visita y mientras no haya respuesta.
-- Tres opciones visibles: **Aceptar todas** · **Rechazar todas** · **Personalizar**.
-- "Rechazar" tan accesible como "Aceptar" (exigencia AEPD 2024).
-- Si el usuario no responde y cierra el banner → tratar como rechazo (no consentir cookies no técnicas).
-- El consentimiento se guarda en `legal_consents` + cookie `cookie-consent` con la elección.
-- **Hasta que no haya consentimiento de la categoría "publicidad", AdSense NO se carga.** Mismo con analíticas.
+La plataforma se financia con publicidad en el plan gratuito. Aplicamos el modelo **«consentir o suscribirse»** ("consent or pay" / "pay or okay"), el mismo que usan los grandes editores españoles (El País/Prisa, El Mundo/Unidad Editorial, MARCA, Vocento…).
+
+**Base legal (contrastada):**
+- **AEPD — Guía sobre el uso de las cookies (mayo de 2024):** tras adaptarse a las directrices del CEPD, **admite condicionar el acceso a la aceptación de cookies (muro de cookies) siempre que se ofrezca una ALTERNATIVA REAL**, que **no tiene por qué ser gratuita** (puede ser de pago). Requisitos: información clara previa, alternativa genuina y **precio razonable y proporcionado**, sin presionar para consentir. ([nota de prensa AEPD](https://www.aepd.es/prensa-y-comunicacion/notas-de-prensa/aepd-actualiza-guia-cookies-para-adaptarla-a-nuevas-directrices-cepd), [guía PDF](https://www.aepd.es/guias/guia-cookies.pdf))
+- **CEPD/EDPB — Dictamen 08/2024** sobre modelos "consent or pay": endurece el criterio **solo para "grandes plataformas en línea"** (a las que pide considerar una tercera vía sin publicidad comportamental). **Zodiaq NO es una "gran plataforma en línea"**, por lo que el binomio aceptar/suscribirse es admisible bajo la guía AEPD. ([EDPB Opinion 08/2024](https://www.edpb.europa.eu/our-work-tools/our-documents/opinion-board-art-64/opinion-082024-valid-consent-context-consent-or_en))
+
+**Cómo lo aplicamos (cumpliendo los requisitos):**
+- **Dos vías claras** en el banner, sin casillas premarcadas: **«Aceptar y seguir gratis»** (consiente analítica + publicidad → plan gratuito con anuncios) y **«Suscribirme sin anuncios»** (→ Premium, alternativa de pago real). Se elimina el botón «rechazar y seguir gratis sin anuncios».
+- **Alternativa real y precio razonable:** Premium 4,99 €/mes o 49,99 €/año da acceso equivalente a toda la plataforma **sin publicidad ni cookies de AdSense** (proporcionado para el sector).
+- **Cookies técnicas** siempre activas; **sin consentimiento no se carga ningún script** de analítica ni de AdSense (bloqueo previo).
+- **Analítica = elección libre** (independiente del modelo de pago): se puede activar/desactivar en «Configurar».
+- **No es un muro a pantalla completa** (decisión de producto): el contenido sigue accesible y rastreable por buscadores (regla SEO #12). El modelo retira la opción de "gratis sin anuncios", no bloquea el contenido.
+- **Premium = sin banner de cookies de publicidad** y sin carga de AdSense (doble capa: `AdSlot` + `ConsentScripts`).
+- **Revocación** tan sencilla como el consentimiento (art. 7.3 RGPD), desde «Configurar cookies» del footer.
+- El consentimiento se guarda en `legal_consents` + cookie `cookie-consent` (con versión `LEGAL_VERSION`).
 
 ### Renovación del consentimiento
 - Cada 24 meses el banner vuelve a aparecer (recomendación AEPD).
-- Se puede revisar la elección desde el footer ("Configurar cookies").
+- Al cambiar el modelo de cookies se subió `LEGAL_VERSION` (1.0 → 1.1), lo que re-pregunta a todos los usuarios.
+- Se puede revisar la elección desde el footer («Configurar cookies»).
 
 ## 6. Datos personales — minimización
 

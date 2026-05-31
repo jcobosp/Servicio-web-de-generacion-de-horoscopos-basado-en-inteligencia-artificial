@@ -129,13 +129,20 @@
 2. Cuando llegue el momento real: solicitar AdSense en [adsense.google.com](https://adsense.google.com), añadir el dominio, esperar aprobación (días).
 3. Recibir el `ca-pub-XXXXXXXXXXXXXXXX` y los IDs de slot por unidad publicitaria.
 
-### Integración en el código
-1. Componente `<AdSlot slotId="..." />` que:
-   - Solo se renderiza si el usuario está en plan **free** Y ha dado consentimiento de cookies de publicidad.
-   - Inserta el script `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=...` con `async` y `crossorigin="anonymous"`, una sola vez.
-   - Renderiza `<ins class="adsbygoogle" ... data-ad-client="..." data-ad-slot="..." data-ad-format="auto" data-full-width-responsive="true">` y dispara `(adsbygoogle = window.adsbygoogle || []).push({})`.
-2. Ubicaciones recomendadas: una unidad responsive después del bloque principal de cada página free (NUNCA dentro del flujo de registro o checkout).
-3. Cumplir con las políticas de AdSense: contenido suficiente, navegación clara, sin clics propios, sin anuncios en páginas legales.
+### Integración en el código (estado ACTUAL, ya implementado)
+El mecanismo está completo y "blindado"; solo falta configurar el cliente y los IDs de slot al publicar (ver checklist más abajo).
+1. **`features/legal/ConsentScripts.tsx`** inyecta el script `adsbygoogle.js?client=...` (async, `crossorigin="anonymous"`, una sola vez) **solo si**: hay consentimiento de marketing, existe `VITE_ADSENSE_CLIENT`, y el usuario **NO es premium** (`useIsPremium()`).
+2. **`components/ads/AdSlot.tsx`** dibuja la unidad `<ins class="adsbygoogle" data-ad-client data-ad-slot data-ad-format="auto" data-full-width-responsive>` y dispara `(adsbygoogle = window.adsbygoogle || []).push({})`. **Solo renderiza un anuncio real si TODO se cumple**: `!isPremium && consent.marketing && VITE_ADSENSE_CLIENT && slot`. En `DEV` sin configurar muestra un placeholder gris (no en producción). Premium → `return null` (doble capa con el punto 1).
+3. **Premium = sin anuncios** garantizado en dos capas (script no se carga + unidad no se pinta). El plan gratuito ve anuncios solo si acepta cookies de publicidad (modelo "consentir o suscribirse", ver `LEGAL_COMPLIANCE.md` §cookies).
+
+### ✅ Checklist EXACTO para activar AdSense en producción
+Cuando el sitio esté publicado en su dominio y AdSense aprobado:
+1. **Crear las unidades** en AdSense (una por ubicación; recomendado: una unidad "display" responsive) y anotar cada `data-ad-slot` (ID numérico).
+2. **Configurar el cliente**: poner `VITE_ADSENSE_CLIENT=ca-pub-XXXXXXXXXXXXXXXX` en las variables de entorno de producción (Vercel) y en `.env.local` para pruebas. (En `.env.example` queda vacío.)
+3. **Pasar el `slot` a cada `<AdSlot>`**: hoy las páginas montan `<AdSlot />` **sin `slot`**, por lo que no se pinta anuncio aunque haya cliente. Hay que pasar el ID: `<AdSlot slot="1234567890" />`. El `<AdSlot>` está en **todas las páginas de funcionalidad + la home** (no en auth/legal/cuenta/venta); cada una renderiza uno siempre visible (anónimo y gratis; premium → null). Ubicaciones: `pages/HomePage.tsx`, `components/horoscope/HoroscopeView.tsx` (ambas ramas), `pages/EnergyOfDayPage.tsx` (ambas ramas), `pages/AstroEventsPage.tsx`, `pages/TarotPage.tsx`, `pages/NatalChartPage.tsx`, `pages/SignCompatibilityPage.tsx`, `pages/NumerologyPage.tsx`, y las premium `pages/FullNatalChartPage.tsx`, `pages/CompatibilityPage.tsx`, `pages/ReportsPage.tsx`, `pages/AdvancedTarotPage.tsx`, `pages/AdvancedNumerologyPage.tsx`. (Recomendado: centralizar el ID en una constante/`.env` y pasarlo a todas — `grep -rn "<AdSlot" apps/web/src`.)
+4. **Pruebas locales**: añadir `data-adtest="on"` temporalmente en el `<ins>` de `AdSlot` para ver anuncios de relleno sin riesgo de clics inválidos.
+5. **Verificar**: usuario gratis con cookies aceptadas → ve anuncios; usuario gratis sin aceptar → no; usuario premium → nunca (ni el script).
+- Cumplir políticas de AdSense: contenido suficiente, navegación clara, sin clics propios, **sin anuncios en páginas legales ni en registro/checkout**.
 
 ---
 

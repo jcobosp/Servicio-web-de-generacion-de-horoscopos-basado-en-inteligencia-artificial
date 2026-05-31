@@ -30,7 +30,7 @@ export const company = {
  * consentimiento sobre la nueva versión. Debe coincidir con la versión que el
  * trigger de alta guarda en `legal_consents` (ver migración 0007).
  */
-export const LEGAL_VERSION = '1.0';
+export const LEGAL_VERSION = '1.1';
 
 /** Fecha de última actualización mostrada en las páginas legales. */
-export const LEGAL_LAST_UPDATED = '24 de mayo de 2026';
+export const LEGAL_LAST_UPDATED = '31 de mayo de 2026';

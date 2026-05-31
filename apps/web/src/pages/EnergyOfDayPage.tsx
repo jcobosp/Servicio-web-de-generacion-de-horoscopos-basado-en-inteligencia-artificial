@@ -126,7 +126,6 @@ function EnergyBody({ sign, info }: { sign: ZodiacSign; info: ZodiacInfo }) {
       </Card>
 
       <UpsellCard variant="energy" premiumHook={c.premium_hook} />
-      <AdSlot className="mt-8" />
     </>
   );
 }
@@ -165,6 +164,7 @@ export function EnergyOfDayPage() {
           <div className="mt-8">
             <SignPicker hrefFor={(slug) => `/energia-del-dia/${slug}`} />
           </div>
+          <AdSlot className="mt-10" />
         </div>
       </>
     );
@@ -206,6 +206,8 @@ export function EnergyOfDayPage() {
         <div className="mt-8">
           <EnergyBody sign={sign} info={info} />
         </div>
+
+        <AdSlot className="mt-8" />
 
         <div className="mt-12 border-t border-slate-200 pt-8">
           <SignPicker

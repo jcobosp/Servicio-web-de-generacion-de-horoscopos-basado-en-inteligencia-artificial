@@ -90,6 +90,7 @@ export interface LinkButtonProps {
   className?: string;
   children?: ReactNode;
   external?: boolean;
+  onClick?: () => void;
 }
 
 export function LinkButton({
@@ -102,6 +103,7 @@ export function LinkButton({
   className,
   children,
   external,
+  onClick,
 }: LinkButtonProps) {
   const classes = cn(
     base,
@@ -113,7 +115,13 @@ export function LinkButton({
 
   if (external) {
     return (
-      <a href={to} className={classes} target="_blank" rel="noopener noreferrer">
+      <a
+        href={to}
+        className={classes}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={onClick}
+      >
         {leftIcon}
         {children}
         {rightIcon}
@@ -122,7 +130,7 @@ export function LinkButton({
   }
 
   return (
-    <Link to={to} className={classes}>
+    <Link to={to} className={classes} onClick={onClick}>
       {leftIcon}
       {children}
       {rightIcon}

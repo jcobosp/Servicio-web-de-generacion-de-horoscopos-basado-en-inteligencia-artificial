@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { AdSlot } from '@/components/ads/AdSlot';
 import { PremiumGate } from '@/components/billing/PremiumGate';
 import { useProfile } from '@/features/profile/hooks';
 import {
@@ -448,6 +449,8 @@ function ReportsPage({ kind }: { kind: ReportKind }) {
             <ReportBody kind={kind} />
           </PremiumGate>
         </div>
+
+        <AdSlot className="mt-8" />
       </div>
     </>
   );

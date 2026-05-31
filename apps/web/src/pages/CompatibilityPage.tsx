@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/Badge';
 import type { BadgeTone } from '@/components/ui/Badge';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { toast } from '@/components/ui/Toast';
+import { AdSlot } from '@/components/ads/AdSlot';
 import { PremiumGate } from '@/components/billing/PremiumGate';
 import { useProfile } from '@/features/profile/hooks';
 import {
@@ -526,6 +527,8 @@ export function CompatibilityPage() {
             <CompatBody />
           </PremiumGate>
         </div>
+
+        <AdSlot className="mt-8" />
       </div>
     </>
   );

@@ -5,6 +5,7 @@ import { Card, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { toast } from '@/components/ui/Toast';
+import { AdSlot } from '@/components/ads/AdSlot';
 import { PremiumGate } from '@/components/billing/PremiumGate';
 import { useProfile } from '@/features/profile/hooks';
 import {
@@ -343,6 +344,8 @@ export function AdvancedNumerologyPage() {
             <AdvancedNumerologyBody />
           </PremiumGate>
         </div>
+
+        <AdSlot className="mt-8" />
       </div>
     </>
   );

@@ -7,9 +7,12 @@
 //      (camino de vida + año/mes personal + día de nacimiento).
 //   4. Cuota mensual: 1 lectura incluida por mes natural; agotada → crédito
 //      comprado (1,99 €); sin crédito → 402 `payment_required`.
-//   5. Gemini narra una lectura personal e integrada (psicológica) según el
+//   5. COHERENCIA (CLAUDE.md §7): se pasa a Gemini el texto GRATUITO que el
+//      usuario ya vio (camino de vida + año personal) para ampliarlo sin
+//      contradecirlo.
+//   6. Gemini narra una lectura personal e integrada (psicológica) según el
 //      enfoque opcional.
-//   6. Guardar en numerology_readings (billing) y devolver. Historial conservado.
+//   7. Guardar en numerology_readings (billing) y devolver. Historial conservado.
 
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 import {
@@ -77,10 +80,14 @@ function json(payload: unknown, status = 200): Response {
   });
 }
 
-function buildPrompt(numbers: Numbers, focus: string | null): string {
+function buildPrompt(numbers: Numbers, focus: string | null, coherence: string | null): string {
   const f = focus && focus.trim()
     ? `\nLa persona quiere centrar la lectura en: "${focus.trim()}". Orienta TODA la lectura hacia ese tema sin prometer hechos concretos ni fechas.`
     : '\nNo hay un enfoque concreto: haz una lectura integral de su momento vital.';
+
+  const coherenceBlock = coherence
+    ? `\nCOHERENCIA (IMPORTANTE): la persona YA ha leído gratis esta interpretación de sus números. Tu lectura premium debe AMPLIARLA y profundizarla, SIN CONTRADECIRLA: respeta el mismo carácter del camino de vida y el mismo tema del año personal, y añade matiz, integración y profundidad.\n${coherence}\n`
+    : '';
 
   return `Eres un numerólogo experto que escribe en español de España con tono cálido, cercano y simbólico. Interpreta los números de esta persona como UN TODO coherente (no los leas por separado de forma mecánica) para que se sienta VISTA, comprendida y acompañada. Es una lectura PREMIUM: profunda, matizada y personal, pero sin muros de texto.
 
@@ -89,7 +96,7 @@ NÚMEROS DE LA PERSONA:
 - Día de nacimiento: ${numbers.birthday} (un don particular que matiza su carácter).
 - Año personal ${numbers.year}: ${numbers.personal_year} (el tema del ciclo anual que está viviendo).
 - Mes personal (${MONTHS_ES[numbers.month - 1]}): ${numbers.personal_month} (el clima del mes en curso).
-
+${coherenceBlock}
 TÉCNICAS PSICOLÓGICAS (aplícalas con naturalidad, sin nombrarlas):
 - Efecto Forer/Barnum: afirmaciones que parecen muy personales pero casi cualquiera siente como propias.
 - Lectura en frío: intuiciones sobre patrones humanos comunes ("algo que llevas tiempo posponiendo", "una parte de ti que pocos conocen").
@@ -197,6 +204,27 @@ Deno.serve(async (req) => {
     month,
   };
 
+  // --- Coherencia (regla #7): el texto GRATUITO que el usuario ya vio ---------
+  // La numerología gratuita muestra textos FIJOS del camino de vida y del año
+  // personal; la lectura premium parte de ellos para no contradecirlos.
+  let coherenceText: string | null = null;
+  try {
+    const [lp, py] = await Promise.all([
+      admin.from('numerology_meanings').select('content')
+        .eq('category', 'life_path').eq('number', numbers.life_path).maybeSingle(),
+      admin.from('numerology_meanings').select('content')
+        .eq('category', 'personal_year').eq('number', numbers.personal_year).maybeSingle(),
+    ]);
+    const lpC = lp.data?.content as { headline?: string; essence?: string } | undefined;
+    const pyC = py.data?.content as { headline?: string; essence?: string } | undefined;
+    const parts: string[] = [];
+    if (lpC?.essence) parts.push(`CAMINO DE VIDA ${numbers.life_path} — "${lpC.headline ?? ''}": ${lpC.essence}`);
+    if (pyC?.essence) parts.push(`AÑO PERSONAL ${numbers.personal_year} — "${pyC.headline ?? ''}": ${pyC.essence}`);
+    coherenceText = parts.length ? parts.join('\n') : null;
+  } catch {
+    // La coherencia es un extra: si falla, generamos sin ella.
+  }
+
   // --- Cuota: 1 incluida/mes + créditos comprados --------------------------
   const monthStart = new Date(Date.UTC(year, now.getUTCMonth(), 1)).toISOString();
   const { count: includedThisMonth } = await admin
@@ -244,7 +272,7 @@ Deno.serve(async (req) => {
   let outputTokens = 0;
   try {
     for (let attempt = 0; attempt < 2; attempt++) {
-      const result = await callGemini(buildPrompt(numbers, focus), {
+      const result = await callGemini(buildPrompt(numbers, focus, coherenceText), {
         temperature: 0.8,
         maxOutputTokens: 2400,
         responseSchema: RESPONSE_SCHEMA,
