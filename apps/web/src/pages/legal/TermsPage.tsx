@@ -6,6 +6,7 @@ export function TermsPage() {
     <LegalPage
       title="Términos y condiciones"
       description="Condiciones de uso del servicio Zodiaq: cuenta, suscripción premium y derechos del usuario."
+      path="/terminos-y-condiciones"
     >
       <p>
         Estos términos regulan el uso de la plataforma {company.brand}. Al

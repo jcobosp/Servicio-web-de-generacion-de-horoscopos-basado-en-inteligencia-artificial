@@ -177,8 +177,8 @@ export const router = createBrowserRouter([
       { path: 'numerologia/avanzada', element: protect(<AdvancedNumerologyPage />) },
       { path: 'carta-natal/completa', element: protect(<FullNatalChartPage />) },
       { path: 'compatibilidad/avanzada', element: protect(<CompatibilityPage />) },
-      { path: 'reportes/mensual', element: protect(<MonthlyReportPage />) },
-      { path: 'reportes/anual', element: protect(<AnnualReportPage />) },
+      { path: 'reportes/mensual', element: withSuspense(<MonthlyReportPage />) },
+      { path: 'reportes/anual', element: withSuspense(<AnnualReportPage />) },
 
       // Cuenta (protegidas)
       { path: 'perfil', element: protect(<ProfilePage />) },

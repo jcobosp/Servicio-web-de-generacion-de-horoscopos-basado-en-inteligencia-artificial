@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '@/lib/seo';
 import { useSearchParams } from 'react-router-dom';
 import { Card, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -314,15 +314,11 @@ function AdvancedNumerologyBody() {
 export function AdvancedNumerologyPage() {
   return (
     <>
-      <Helmet>
-        <title>{`Numerología personal · ${company.brand}`}</title>
-        <meta
-          name="description"
-          content="Tu lectura numerológica personal: un retrato único que entreteje tu camino de vida con tu año y mes personal, escrito para tu momento exacto."
-        />
-        <meta name="robots" content="noindex" />
-        <link rel="canonical" href={`${company.siteUrl}/numerologia/avanzada`} />
-      </Helmet>
+      <Seo
+        title={`Numerología personal · ${company.brand}`}
+        description="Tu lectura numerológica personal: un retrato único que entreteje tu camino de vida con tu año y mes personal, escrito para tu momento exacto."
+        noindex
+      />
 
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
         <header>

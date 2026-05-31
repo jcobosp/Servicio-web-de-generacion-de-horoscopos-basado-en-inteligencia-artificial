@@ -6,6 +6,7 @@ export function PrivacyPolicyPage() {
     <LegalPage
       title="Política de privacidad"
       description="Cómo trata Zodiaq tus datos personales conforme al RGPD y la LOPDGDD."
+      path="/politica-de-privacidad"
     >
       <p>
         Esta política explica cómo {company.brand} trata los datos personales de

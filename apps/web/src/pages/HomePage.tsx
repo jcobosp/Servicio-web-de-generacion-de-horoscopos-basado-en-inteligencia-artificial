@@ -1,4 +1,4 @@
-import { Helmet } from 'react-helmet-async';
+import { Seo, JsonLd, websiteSchema, organizationSchema } from '@/lib/seo';
 import { ZODIAC_SIGNS, ZODIAC } from '@/lib/zodiac';
 import { SignCard } from '@/components/zodiac/SignCard';
 import { Card, CardTitle, CardDescription } from '@/components/ui/Card';
@@ -49,14 +49,13 @@ const features: Feature[] = [
 export function HomePage() {
   return (
     <>
-      <Helmet>
-        <title>Zodiaq · Tu horóscopo, como nunca te lo han contado</title>
-        <meta
-          name="description"
-          content="Horóscopos diarios, semanales y mensuales personalizados por tu signo. Carta natal, tarot y compatibilidad escritos por inteligencia artificial."
-        />
-        <link rel="canonical" href="/" />
-      </Helmet>
+      <Seo
+        title="Zodiaq · Tu horóscopo, como nunca te lo han contado"
+        description="Horóscopos diarios, semanales y mensuales personalizados por tu signo. Carta natal, tarot y compatibilidad escritos por inteligencia artificial."
+        path="/"
+      />
+      <JsonLd data={websiteSchema()} />
+      <JsonLd data={organizationSchema()} />
 
       {/* Hero */}
       <section className="relative overflow-hidden">

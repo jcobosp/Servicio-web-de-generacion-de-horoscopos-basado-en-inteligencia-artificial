@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '@/lib/seo';
 import { Card, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
@@ -45,10 +45,11 @@ export function DataPrivacyPage() {
 
   return (
     <>
-      <Helmet>
-        <title>Mis datos · Zodiaq</title>
-        <meta name="robots" content="noindex" />
-      </Helmet>
+      <Seo
+        title="Mis datos · Zodiaq"
+        description="Gestiona tus datos personales en Zodiaq: exporta tu información o elimina tu cuenta conforme al RGPD."
+        noindex
+      />
 
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
         <h1 className="font-display text-3xl text-ink">Mis datos</h1>

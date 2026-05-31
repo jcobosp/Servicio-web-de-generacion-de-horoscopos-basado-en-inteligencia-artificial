@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '@/lib/seo';
 import { Card } from '@/components/ui/Card';
 import { Button, LinkButton } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -253,14 +253,11 @@ export function NatalChartPage() {
 
   return (
     <>
-      <Helmet>
-        <title>{`Carta natal · ${company.brand}`}</title>
-        <meta
-          name="description"
-          content="Tu carta natal básica gratuita: descubre tu Sol, tu Luna y tu Ascendente, e interpreta quién eres de verdad."
-        />
-        <link rel="canonical" href={`${company.siteUrl}/carta-natal/basica`} />
-      </Helmet>
+      <Seo
+        title={`Carta natal · ${company.brand}`}
+        description="Tu carta natal básica gratuita: descubre tu Sol, tu Luna y tu Ascendente, e interpreta quién eres de verdad."
+        path="/carta-natal/basica"
+      />
 
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
         <header>

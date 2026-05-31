@@ -1,12 +1,14 @@
 import type { ReactNode } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { LEGAL_LAST_UPDATED, company } from '@/features/legal/company';
+import { Seo } from '@/lib/seo';
 
 interface LegalPageProps {
   /** Título visible y base del <title> del documento. */
   title: string;
   /** Descripción para SEO (<meta name="description">). */
   description: string;
+  /** Ruta canónica del documento (p. ej. `/aviso-legal`). */
+  path: string;
   /** Cuerpo del documento (encabezados h2, párrafos, listas...). */
   children: ReactNode;
 }
@@ -16,14 +18,19 @@ interface LegalPageProps {
  * contenedor con estilos tipográficos aplicados por selector (no requiere el
  * plugin @tailwindcss/typography).
  */
-export function LegalPage({ title, description, children }: LegalPageProps) {
+export function LegalPage({
+  title,
+  description,
+  path,
+  children,
+}: LegalPageProps) {
   return (
     <>
-      <Helmet>
-        <title>{`${title} · ${company.brand}`}</title>
-        <meta name="description" content={description} />
-        <link rel="canonical" href={`${company.siteUrl}`} />
-      </Helmet>
+      <Seo
+        title={`${title} · ${company.brand}`}
+        description={description}
+        path={path}
+      />
 
       <article className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
         <header className="border-b border-slate-200 pb-6">

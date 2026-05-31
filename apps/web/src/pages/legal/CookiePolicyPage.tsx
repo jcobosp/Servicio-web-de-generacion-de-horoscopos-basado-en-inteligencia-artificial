@@ -10,6 +10,7 @@ export function CookiePolicyPage() {
     <LegalPage
       title="Política de cookies"
       description="Qué cookies usa Zodiaq, para qué sirven y cómo gestionar tu consentimiento."
+      path="/politica-de-cookies"
     >
       <p>
         Una cookie es un pequeño archivo que un sitio web guarda en tu navegador.

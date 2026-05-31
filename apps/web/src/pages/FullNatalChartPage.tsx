@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '@/lib/seo';
 import { Card, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -321,15 +321,11 @@ function FullChartBody() {
 export function FullNatalChartPage() {
   return (
     <>
-      <Helmet>
-        <title>{`Carta natal completa · ${company.brand}`}</title>
-        <meta
-          name="description"
-          content="Tu carta natal completa: 10 planetas, 12 casas y los aspectos entre ellos, interpretados a fondo. El mapa que explica por qué eres tú."
-        />
-        <meta name="robots" content="noindex" />
-        <link rel="canonical" href={`${company.siteUrl}/carta-natal/completa`} />
-      </Helmet>
+      <Seo
+        title={`Carta natal completa · ${company.brand}`}
+        description="Tu carta natal completa: 10 planetas, 12 casas y los aspectos entre ellos, interpretados a fondo. El mapa que explica por qué eres tú."
+        noindex
+      />
 
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
         <header>

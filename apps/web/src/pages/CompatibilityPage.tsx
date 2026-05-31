@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '@/lib/seo';
 import { useSearchParams } from 'react-router-dom';
 import { Card, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -497,15 +497,11 @@ function CompatBody() {
 export function CompatibilityPage() {
   return (
     <>
-      <Helmet>
-        <title>{`Compatibilidad avanzada · ${company.brand}`}</title>
-        <meta
-          name="description"
-          content="Compatibilidad avanzada: sinastría completa entre dos cartas, con afinidad, amor, comunicación, roces y potencial a largo plazo."
-        />
-        <meta name="robots" content="noindex" />
-        <link rel="canonical" href={`${company.siteUrl}/compatibilidad/avanzada`} />
-      </Helmet>
+      <Seo
+        title={`Compatibilidad avanzada · ${company.brand}`}
+        description="Compatibilidad avanzada: sinastría completa entre dos cartas, con afinidad, amor, comunicación, roces y potencial a largo plazo."
+        noindex
+      />
 
       <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
         <header>

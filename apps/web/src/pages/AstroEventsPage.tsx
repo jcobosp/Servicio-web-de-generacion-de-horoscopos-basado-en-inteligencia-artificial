@@ -1,4 +1,4 @@
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '@/lib/seo';
 import { Card } from '@/components/ui/Card';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { UpsellCard } from '@/components/horoscope/UpsellCard';
@@ -120,14 +120,11 @@ function EventsBody() {
 export function AstroEventsPage() {
   return (
     <>
-      <Helmet>
-        <title>{`Eventos astrológicos · ${company.brand}`}</title>
-        <meta
-          name="description"
-          content="Eventos astrológicos del mes: lunas nuevas y llenas e ingresos planetarios, con interpretación emocional para cada momento."
-        />
-        <link rel="canonical" href={`${company.siteUrl}/eventos-astrologicos`} />
-      </Helmet>
+      <Seo
+        title={`Eventos astrológicos · ${company.brand}`}
+        description="Eventos astrológicos del mes: lunas nuevas y llenas e ingresos planetarios, con interpretación emocional para cada momento."
+        path="/eventos-astrologicos"
+      />
 
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
         <header>
