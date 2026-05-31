@@ -260,7 +260,11 @@ export function TarotPage() {
               </div>
             ) : null}
 
-            <UpsellCard variant="tarot" premiumHook={reading?.premium_hook} />
+            <UpsellCard
+              variant="tarot"
+              premiumHook={reading?.premium_hook}
+              to="/tarot/avanzado"
+            />
             <AdSlot className="mt-8" />
           </>
         )}

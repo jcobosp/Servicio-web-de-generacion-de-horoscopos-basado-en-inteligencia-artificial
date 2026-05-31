@@ -25,6 +25,7 @@ import type {
 import { searchCities } from '@/features/natal/cities';
 import type { City } from '@/features/natal/cities';
 import { ZODIAC } from '@/lib/zodiac';
+import { decodeByteaText } from '@/lib/bytea';
 import { company } from '@/features/legal/company';
 
 interface PersonState {
@@ -290,12 +291,14 @@ function CompatBody() {
   const [prefilledFor, setPrefilledFor] = useState<string | null>(null);
   if (profile && profile.id !== prefilledFor) {
     setPrefilledFor(profile.id);
-    const match = profile.birth_place ? searchCities(profile.birth_place, 1)[0] : null;
+    const time = decodeByteaText(profile.birth_time);
+    const placeName = decodeByteaText(profile.birth_place);
+    const match = placeName ? searchCities(placeName, 1)[0] : null;
     setPersonA({
       label: profile.display_name ?? 'Yo',
       birthDate: profile.birth_date ?? '',
-      birthTime: profile.birth_time ? profile.birth_time.slice(0, 5) : '',
-      cityQuery: profile.birth_place ?? '',
+      birthTime: time ? time.slice(0, 5) : '',
+      cityQuery: placeName ?? '',
       city: match ?? null,
     });
   }

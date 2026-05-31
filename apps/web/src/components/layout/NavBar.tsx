@@ -18,6 +18,8 @@ const navItems: NavItem[] = [
   { label: 'Tarot', to: '/tarot/simple' },
   { label: 'Carta natal', to: '/carta-natal/basica' },
   { label: 'Compatibilidad', to: '/compatibilidad' },
+  { label: 'Numerología', to: '/numerologia' },
+  { label: 'Reportes', to: '/reportes/mensual' },
   { label: 'Premium', to: '/premium' },
 ];
 

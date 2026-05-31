@@ -224,6 +224,38 @@ export function SubscriptionPage() {
                       💞 Compatibilidad avanzada →
                     </Link>
                   </li>
+                  <li>
+                    <Link
+                      to="/reportes/mensual"
+                      className="font-medium text-cosmos-700 hover:underline"
+                    >
+                      🌙 Informe mensual →
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/reportes/anual"
+                      className="font-medium text-cosmos-700 hover:underline"
+                    >
+                      🗓️ Informe anual →
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/tarot/avanzado"
+                      className="font-medium text-cosmos-700 hover:underline"
+                    >
+                      🔮 Tarot avanzado →
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/numerologia/avanzada"
+                      className="font-medium text-cosmos-700 hover:underline"
+                    >
+                      🔢 Numerología personal →
+                    </Link>
+                  </li>
                 </ul>
               </Card>
             )}
