@@ -7,15 +7,16 @@
    Tokens definidos según docs/DESIGN_SYSTEM.md
    ============================================================ */
 @theme {
-  /* Fuentes */
-  --font-display: 'Fraunces', ui-serif, Georgia, serif;
+  /* Fuentes — display moderna (Space Grotesk) + texto (Inter) */
+  --font-display: 'Space Grotesk', 'Inter', system-ui, sans-serif;
   --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
 
-  /* Neutros base */
+  /* Neutros base. `silver` se oscurece respecto al original (#94a3b8) para
+     cumplir contraste AA sobre blanco en texto pequeño (gris claro prohibido). */
   --color-ink: #0f172a;
   --color-graphite: #334155;
-  --color-silver: #94a3b8;
+  --color-silver: #64748b;
   --color-mist: #f3f4f6;
   --color-cloud: #f9fafb;
 
@@ -31,10 +32,12 @@
   --color-cosmos-800: #3730a3;
   --color-cosmos-900: #312e81;
 
-  /* Aurora (acento violeta claro) */
+  /* Aurora (acento violeta) */
   --color-aurora-300: #c4b5fd;
   --color-aurora-400: #a78bfa;
   --color-aurora-500: #8b5cf6;
+  --color-aurora-600: #7c3aed;
+  --color-aurora-700: #6d28d9;
 
   /* Premium (oro) */
   --color-gold-300: #fcd34d;
@@ -43,14 +46,72 @@
   --color-gold-600: #d97706;
   --color-starlight: #fcd34d;
 
+  /* ----------------------------------------------------------------
+     Colores TEMÁTICOS por funcionalidad. Cada familia trae tonos
+     500/600/700 (los 600/700 garantizan contraste AA para texto sobre
+     blanco) y un tono 50/100 para fondos suaves. Ver DESIGN_SYSTEM.
+     ---------------------------------------------------------------- */
+  /* Tarot — fucsia/magenta místico */
+  --color-tarot-50: #fdf4ff;
+  --color-tarot-100: #fae8ff;
+  --color-tarot-500: #d946ef;
+  --color-tarot-600: #c026d3;
+  --color-tarot-700: #a21caf;
+
+  /* Carta natal — azul astral */
+  --color-astral-50: #eff6ff;
+  --color-astral-100: #dbeafe;
+  --color-astral-500: #3b82f6;
+  --color-astral-600: #2563eb;
+  --color-astral-700: #1d4ed8;
+
+  /* Compatibilidad — rosa amor */
+  --color-amor-50: #fff1f2;
+  --color-amor-100: #ffe4e6;
+  --color-amor-500: #f43f5e;
+  --color-amor-600: #e11d48;
+  --color-amor-700: #be123c;
+
+  /* Numerología — verde esmeralda */
+  --color-numen-50: #ecfdf5;
+  --color-numen-100: #d1fae5;
+  --color-numen-500: #10b981;
+  --color-numen-600: #059669;
+  --color-numen-700: #047857;
+
+  /* Energía del día — ámbar/naranja */
+  --color-energy-50: #fff7ed;
+  --color-energy-100: #ffedd5;
+  --color-energy-500: #f97316;
+  --color-energy-600: #ea580c;
+  --color-energy-700: #c2410c;
+
+  /* Eventos astrológicos — cian/cielo */
+  --color-celeste-50: #ecfeff;
+  --color-celeste-100: #cffafe;
+  --color-celeste-500: #06b6d4;
+  --color-celeste-600: #0891b2;
+  --color-celeste-700: #0e7490;
+
   /* Espaciados extra */
   --spacing-18: 4.5rem;
   --spacing-22: 5.5rem;
   --spacing-26: 6.5rem;
 
-  /* Sombras místicas */
+  /* Sombras y glows */
   --shadow-glow-cosmos: 0 8px 32px -8px rgba(99, 102, 241, 0.45);
   --shadow-glow-gold: 0 8px 32px -8px rgba(245, 158, 11, 0.45);
+  --shadow-soft: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px -12px rgba(15, 23, 42, 0.12);
+  --shadow-lift: 0 12px 40px -12px rgba(15, 23, 42, 0.22);
+
+  /* Animaciones reutilizables como utilidades `animate-*` de Tailwind v4 */
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-float-slow: float 9s ease-in-out infinite;
+  --animate-twinkle: twinkle 3.5s ease-in-out infinite;
+  --animate-gradient: gradient-pan 8s ease infinite;
+  --animate-shimmer: shimmer 2.2s linear infinite;
+  --animate-pulse-glow: pulse-glow 3s ease-in-out infinite;
+  --animate-spin-slow: spin 18s linear infinite;
 }
 
 /* Reset y base */
@@ -89,6 +150,32 @@
   .shadow-glow-gold {
     box-shadow: var(--shadow-glow-gold);
   }
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+  .shadow-lift {
+    box-shadow: var(--shadow-lift);
+  }
+
+  /* Texto con relleno de gradiente (titulares llamativos) */
+  .text-gradient {
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Borde con gradiente mediante doble fondo (cards modernas) */
+  .border-gradient {
+    border: 1px solid transparent;
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+  }
+
+  /* Para animar gradientes (necesita tamaño mayor que el contenedor) */
+  .bg-animated {
+    background-size: 200% 200%;
+  }
 }
 
 /* Animaciones */
@@ -111,6 +198,61 @@
   to {
     opacity: 1;
     transform: translateX(0);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes gradient-pan {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: -200% 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.06);
   }
 }
 

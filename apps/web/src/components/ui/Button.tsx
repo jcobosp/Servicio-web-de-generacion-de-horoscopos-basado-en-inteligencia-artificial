@@ -29,13 +29,13 @@ const base =
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    'bg-cosmos-700 text-white shadow-sm hover:bg-cosmos-800 hover:shadow-md active:scale-[0.98]',
+    'bg-cosmos-700 text-white shadow-soft hover:bg-cosmos-800 hover:shadow-lift hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]',
   secondary:
-    'bg-white text-cosmos-700 border border-cosmos-200 hover:bg-cosmos-50 hover:border-cosmos-300',
+    'bg-white text-cosmos-700 border border-cosmos-200 hover:bg-cosmos-50 hover:border-cosmos-300 hover:-translate-y-0.5 active:translate-y-0',
   ghost: 'bg-transparent text-graphite hover:bg-mist hover:text-ink',
   premium:
     'bg-gradient-to-r from-gold-400 via-gold-500 to-gold-600 text-white shadow-glow-gold ' +
-    'hover:from-gold-500 hover:to-gold-600 hover:shadow-md active:scale-[0.98]',
+    'hover:from-gold-500 hover:to-gold-600 hover:shadow-lift hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]',
   danger:
     'bg-red-600 text-white hover:bg-red-700 active:scale-[0.98] shadow-sm hover:shadow-md',
 };

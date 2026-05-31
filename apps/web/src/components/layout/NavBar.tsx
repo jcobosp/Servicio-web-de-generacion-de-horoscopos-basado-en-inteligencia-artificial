@@ -1,8 +1,11 @@
 import { useState } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import type { MotionProps } from 'framer-motion';
+import { Flame, Menu, Sparkles, X } from 'lucide-react';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { Button, LinkButton } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
+import { Logo } from '@/components/layout/Logo';
 import { cn } from '@/lib/cn';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { signOut } from '@/features/auth/api';
@@ -29,9 +32,19 @@ export function NavBar() {
   const { session } = useAuth();
   const { data: streak } = useStreak();
   const navigate = useNavigate();
+  const reduce = useReducedMotion();
   const [open, setOpen] = useState(false);
 
   const streakDays = streak?.current_streak ?? 0;
+
+  const menuMotion: MotionProps = reduce
+    ? { initial: false }
+    : {
+        initial: { height: 0, opacity: 0 },
+        animate: { height: 'auto', opacity: 1 },
+        exit: { height: 0, opacity: 0 },
+        transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] },
+      };
 
   async function onLogout() {
     await signOut();
@@ -40,72 +53,75 @@ export function NavBar() {
   }
 
   return (
-    <header
-      className={cn(
-        'sticky top-0 z-50 w-full transition-all duration-200',
-        'border-b backdrop-blur-md',
-        scrolled
-          ? 'border-slate-200 bg-white/85 shadow-sm'
-          : 'border-transparent bg-white/70',
-      )}
-    >
-      <div
-        className={cn(
-          'mx-auto flex max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8',
-          'transition-all duration-200',
-          scrolled ? 'h-14' : 'h-16 md:h-18',
-        )}
-      >
-        <Link
-          to="/"
-          className="flex items-center gap-2 font-display text-xl text-ink"
-          aria-label="Zodiaq, inicio"
+    <header className="sticky top-0 z-50 w-full px-3 pt-2 sm:px-4 sm:pt-3 lg:px-6">
+      <div className="mx-auto max-w-7xl">
+        <div
+          className={cn(
+            'flex items-center justify-between rounded-2xl border px-4 backdrop-blur-xl transition-all duration-300 sm:px-6',
+            scrolled
+              ? 'border-slate-200/80 bg-white/85 shadow-lift'
+              : 'border-slate-200/60 bg-white/75 shadow-soft',
+            scrolled ? 'h-14' : 'h-16 md:h-18',
+          )}
         >
-          <span
-            aria-hidden="true"
-            className="text-2xl bg-gradient-to-br from-cosmos-600 via-aurora-500 to-gold-500 bg-clip-text text-transparent"
-          >
-            ✦
-          </span>
-          <span>Zodiaq</span>
-          <Badge tone="cosmos" className="ml-1 hidden sm:inline-flex">
-            beta
-          </Badge>
-        </Link>
+          <Logo to="/" size="md" />
 
-        <nav
-          aria-label="Principal"
-          className="hidden items-center gap-1 md:flex"
-        >
-          {navItems.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              onMouseEnter={() => prefetchRoute(item.to)}
-              onFocus={() => prefetchRoute(item.to)}
-              className={({ isActive }) =>
-                cn(
-                  'rounded-lg px-3 py-2 text-sm font-medium transition',
-                  isActive
-                    ? 'text-cosmos-700 bg-cosmos-50'
-                    : 'text-graphite hover:bg-mist hover:text-ink',
-                  item.to === '/premium' && !isActive && 'text-gold-600',
-                )
-              }
-            >
-              {item.label === 'Premium' ? (
-                <span className="flex items-center gap-1">
-                  <span aria-hidden="true">✨</span>
-                  {item.label}
-                </span>
-              ) : (
-                item.label
-              )}
-            </NavLink>
-          ))}
+        {/* Navegación escritorio */}
+        <nav aria-label="Principal" className="hidden items-center gap-0.5 lg:flex">
+          {navItems.map((item) => {
+            const isPremium = item.to === '/premium';
+            return (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                onMouseEnter={() => prefetchRoute(item.to)}
+                onFocus={() => prefetchRoute(item.to)}
+                className="relative rounded-lg px-3 py-2 text-sm font-medium transition"
+              >
+                {({ isActive }) => (
+                  <span
+                    className={cn(
+                      'relative z-10 flex items-center gap-1',
+                      isPremium
+                        ? isActive
+                          ? 'text-gold-600'
+                          : 'text-gold-600 hover:text-gold-500'
+                        : isActive
+                          ? 'text-cosmos-700'
+                          : 'text-graphite hover:text-ink',
+                    )}
+                  >
+                    {isPremium && (
+                      <Sparkles className="h-3.5 w-3.5" strokeWidth={2.4} aria-hidden="true" />
+                    )}
+                    {item.label}
+                    {isActive &&
+                      (reduce ? (
+                        <span
+                          className={cn(
+                            'absolute -bottom-1.5 left-0 right-0 mx-auto h-0.5 w-5 rounded-full bg-gradient-to-r',
+                            isPremium ? 'from-gold-400 to-gold-600' : 'from-cosmos-600 to-aurora-500',
+                          )}
+                        />
+                      ) : (
+                        <motion.span
+                          layoutId="nav-underline"
+                          className={cn(
+                            'absolute -bottom-1.5 left-1 right-1 h-0.5 rounded-full bg-gradient-to-r',
+                            isPremium ? 'from-gold-400 to-gold-600' : 'from-cosmos-600 to-aurora-500',
+                          )}
+                          transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                        />
+                      ))}
+                  </span>
+                )}
+              </NavLink>
+            );
+          })}
         </nav>
 
-        <div className="hidden items-center gap-2 md:flex">
+        {/* Acciones escritorio */}
+        <div className="hidden items-center gap-2 lg:flex">
           {session ? (
             <>
               {streakDays > 0 && (
@@ -113,7 +129,7 @@ export function NavBar() {
                   title={`Racha de ${streakDays} día${streakDays === 1 ? '' : 's'}`}
                   className="inline-flex items-center gap-1 rounded-full bg-gold-50 px-2.5 py-1 text-sm font-semibold text-gold-600"
                 >
-                  <span aria-hidden="true">🔥</span>
+                  <Flame className="h-4 w-4" aria-hidden="true" />
                   {streakDays}
                 </span>
               )}
@@ -121,7 +137,7 @@ export function NavBar() {
                 Mi perfil
               </LinkButton>
               <Button variant="ghost" size="sm" onClick={onLogout}>
-                Cerrar sesión
+                Salir
               </Button>
             </>
           ) : (
@@ -130,90 +146,82 @@ export function NavBar() {
                 Iniciar sesión
               </LinkButton>
               <LinkButton to="/registro" variant="primary" size="sm">
-                Registrarse
+                Empezar gratis
               </LinkButton>
             </>
           )}
         </div>
 
+        {/* Botón menú móvil */}
         <Button
           variant="ghost"
           size="sm"
-          className="md:hidden"
-          aria-label="Abrir menú"
+          className="lg:hidden"
+          aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
           aria-expanded={open}
           aria-controls="mobile-menu"
           onClick={() => setOpen((v) => !v)}
         >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            {open ? (
-              <path
-                d="m6 6 12 12M18 6 6 18"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            ) : (
-              <path
-                d="M4 7h16M4 12h16M4 17h16"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            )}
-          </svg>
+          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </Button>
       </div>
 
-      {open && (
-        <div id="mobile-menu" className="border-t border-slate-200 bg-white md:hidden">
-          <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6">
-            <nav aria-label="Móvil" className="flex flex-col gap-1">
-              {navItems.map((item) => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  onClick={() => setOpen(false)}
-                  className={({ isActive }) =>
-                    cn(
-                      'rounded-lg px-3 py-3 text-base font-medium',
-                      isActive
-                        ? 'text-cosmos-700 bg-cosmos-50'
-                        : 'text-graphite hover:bg-mist',
-                    )
-                  }
-                >
-                  {item.label}
-                </NavLink>
-              ))}
-            </nav>
-            {session ? (
-              <div className="mt-4 grid grid-cols-2 gap-2">
-                <LinkButton
-                  to="/perfil"
-                  variant="secondary"
-                  fullWidth
-                  className=""
-                >
-                  Mi perfil
-                </LinkButton>
-                <Button variant="ghost" fullWidth onClick={onLogout}>
-                  Cerrar sesión
-                </Button>
-              </div>
-            ) : (
-              <div className="mt-4 grid grid-cols-2 gap-2">
-                <LinkButton to="/login" variant="secondary" fullWidth>
-                  Iniciar sesión
-                </LinkButton>
-                <LinkButton to="/registro" variant="primary" fullWidth>
-                  Registrarse
-                </LinkButton>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      {/* Menú móvil animado */}
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            id="mobile-menu"
+            {...menuMotion}
+            className="mt-2 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-soft lg:hidden"
+          >
+            <div className="px-4 py-4 sm:px-6">
+              <nav aria-label="Móvil" className="flex flex-col gap-1">
+                {navItems.map((item) => (
+                  <NavLink
+                    key={item.to}
+                    to={item.to}
+                    onClick={() => setOpen(false)}
+                    className={({ isActive }) =>
+                      cn(
+                        'flex items-center gap-2 rounded-xl px-3 py-3 text-base font-medium',
+                        isActive
+                          ? 'bg-cosmos-50 text-cosmos-700'
+                          : 'text-graphite hover:bg-mist',
+                        item.to === '/premium' && 'text-gold-600',
+                      )
+                    }
+                  >
+                    {item.to === '/premium' && (
+                      <Sparkles className="h-4 w-4" strokeWidth={2.4} aria-hidden="true" />
+                    )}
+                    {item.label}
+                  </NavLink>
+                ))}
+              </nav>
+              {session ? (
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  <LinkButton to="/perfil" variant="secondary" fullWidth onClick={() => setOpen(false)}>
+                    Mi perfil
+                  </LinkButton>
+                  <Button variant="ghost" fullWidth onClick={onLogout}>
+                    Salir
+                  </Button>
+                </div>
+              ) : (
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  <LinkButton to="/login" variant="secondary" fullWidth onClick={() => setOpen(false)}>
+                    Iniciar sesión
+                  </LinkButton>
+                  <LinkButton to="/registro" variant="primary" fullWidth onClick={() => setOpen(false)}>
+                    Empezar gratis
+                  </LinkButton>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      </div>
     </header>
   );
 }
