@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Modal } from '@/components/ui/Modal';
-import { Button } from '@/components/ui/Button';
+import { Button, LinkButton } from '@/components/ui/Button';
+import { useIsPremium } from '@/features/billing/hooks';
 import { useConsent } from './ConsentProvider';
 import type { ConsentChoice } from './ConsentProvider';
 
@@ -49,6 +50,7 @@ function Category({
 
 interface PreferencesFormProps {
   initial: ConsentChoice;
+  isPremium: boolean;
   onSave: (choice: ConsentChoice) => void;
   onCloseLink: () => void;
 }
@@ -57,17 +59,29 @@ interface PreferencesFormProps {
  * Cuerpo interactivo del panel. Se monta de nuevo cada vez que el modal se abre
  * (el Modal devuelve null al cerrarse), de modo que los toggles parten siempre
  * de la elección guardada sin necesidad de un efecto de sincronización.
+ *
+ * Modelo "consentir o suscribirse": la publicidad no es un interruptor libre en
+ * el plan gratuito (financia el servicio); la alternativa para no verla es
+ * Premium. La analítica sí es una elección libre. Al guardar, la publicidad
+ * queda activa para usuarios gratuitos y desactivada para premium.
  */
-function PreferencesForm({ initial, onSave, onCloseLink }: PreferencesFormProps) {
+function PreferencesForm({ initial, isPremium, onSave, onCloseLink }: PreferencesFormProps) {
   const [analytics, setAnalytics] = useState(initial.analytics);
-  const [marketing, setMarketing] = useState(initial.marketing);
 
   return (
     <>
       <p className="text-sm leading-relaxed text-graphite">
         Usamos cookies para que la plataforma funcione y, con tu permiso, para
-        medir su uso y mostrar publicidad. Puedes elegir por categoría. Consulta
-        más detalles en nuestra{' '}
+        medir su uso. En el plan gratuito, la <strong>publicidad</strong> financia
+        el servicio; si prefieres no verla, puedes{' '}
+        <Link
+          to="/premium"
+          className="text-cosmos-700 underline"
+          onClick={onCloseLink}
+        >
+          suscribirte a Premium
+        </Link>
+        . Consulta la{' '}
         <Link
           to="/politica-de-cookies"
           className="text-cosmos-700 underline"
@@ -91,22 +105,35 @@ function PreferencesForm({ initial, onSave, onCloseLink }: PreferencesFormProps)
           checked={analytics}
           onChange={setAnalytics}
         />
-        <Category
-          title="Publicidad"
-          description="Permiten mostrar anuncios (Google AdSense) en el plan gratuito. Solo se activan con tu permiso."
-          checked={marketing}
-          onChange={setMarketing}
-        />
+        {isPremium ? (
+          <Category
+            title="Publicidad"
+            description="Tu plan Premium no muestra anuncios: las cookies de publicidad están desactivadas."
+            checked={false}
+            locked
+          />
+        ) : (
+          <Category
+            title="Publicidad"
+            description="En el plan gratuito la publicidad (Google AdSense) financia el servicio y va incluida al usarlo gratis. ¿No quieres anuncios? Hazte Premium y se desactivan."
+            checked
+            locked
+          />
+        )}
       </div>
 
-      <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-end">
-        <Button
-          variant="ghost"
-          onClick={() => onSave({ analytics: false, marketing: false })}
-        >
-          Rechazar todas
-        </Button>
-        <Button onClick={() => onSave({ analytics, marketing })}>
+      <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end">
+        {!isPremium && (
+          <LinkButton
+            to="/premium"
+            variant="secondary"
+            className="sm:mr-auto"
+            onClick={onCloseLink}
+          >
+            Suscribirme sin anuncios
+          </LinkButton>
+        )}
+        <Button onClick={() => onSave({ analytics, marketing: !isPremium })}>
           Guardar preferencias
         </Button>
       </div>
@@ -116,6 +143,7 @@ function PreferencesForm({ initial, onSave, onCloseLink }: PreferencesFormProps)
 
 export function CookiePreferences() {
   const { preferencesOpen, closePreferences, save, consent } = useConsent();
+  const isPremium = useIsPremium();
 
   return (
     <Modal
@@ -129,6 +157,7 @@ export function CookiePreferences() {
           analytics: consent?.analytics ?? false,
           marketing: consent?.marketing ?? false,
         }}
+        isPremium={isPremium}
         onSave={save}
         onCloseLink={closePreferences}
       />

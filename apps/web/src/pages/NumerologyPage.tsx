@@ -188,7 +188,6 @@ export function NumerologyPage() {
                 </div>
               </Card>
 
-              <AdSlot className="mt-2" />
             </>
           ) : enabled ? (
             <Card padding="lg" className="text-center text-silver">
@@ -210,6 +209,8 @@ export function NumerologyPage() {
             </div>
           </Card>
         )}
+
+        <AdSlot className="mt-8" />
       </div>
     </>
   );

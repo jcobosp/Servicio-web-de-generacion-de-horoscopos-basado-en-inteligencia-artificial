@@ -62,17 +62,29 @@ export function CookiePolicyPage() {
         </tbody>
       </table>
 
-      <h2>2. Tu consentimiento</h2>
+      <h2>2. Tu consentimiento: «aceptar o suscribirte»</h2>
       <p>
-        En tu primera visita te mostramos un banner donde puedes{' '}
-        <strong>aceptar todas</strong>, <strong>rechazar todas</strong> o{' '}
-        <strong>personalizar</strong> por categoría. Ninguna cookie no necesaria
-        se activa hasta que la consientes: hasta entonces,{' '}
-        <strong>los scripts de analítica y de AdSense no se cargan</strong>.
+        En {company.brand} aplicamos el modelo de <strong>«consentir o
+        suscribirse»</strong> admitido por la Guía sobre el uso de cookies de la
+        AEPD (mayo de 2024): para usar la plataforma de forma <strong>gratuita</strong>{' '}
+        te pedimos que aceptes las cookies analíticas y de publicidad que financian
+        el servicio; como <strong>alternativa real</strong>, puedes{' '}
+        <strong>suscribirte a Premium</strong> y navegar <strong>sin publicidad</strong>{' '}
+        (a un precio razonable y proporcionado). No te ofrecemos un acceso gratuito
+        sin anuncios, pero sí esta doble vía, claramente y sin casillas
+        premarcadas.
       </p>
       <p>
-        Puedes cambiar tu decisión cuando quieras desde aquí o desde el enlace
-        «Configurar cookies» del pie de página:
+        Las cookies técnicas funcionan siempre. Ninguna cookie de analítica o de
+        publicidad se activa hasta que la consientes: hasta entonces,{' '}
+        <strong>los scripts de analítica y de AdSense no se cargan</strong>. Si
+        eres usuario Premium, la publicidad queda desactivada y no se carga AdSense.
+      </p>
+      <p>
+        La analítica es siempre una elección libre que puedes activar o desactivar.
+        Puedes cambiar tu decisión o revocar tu consentimiento cuando quieras (de
+        forma tan sencilla como lo diste, art. 7.3 RGPD) desde aquí o desde el
+        enlace «Configurar cookies» del pie de página:
       </p>
       <p>
         <Button onClick={openPreferences}>Configurar cookies</Button>

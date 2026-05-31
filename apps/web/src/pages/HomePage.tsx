@@ -4,6 +4,7 @@ import { SignCard } from '@/components/zodiac/SignCard';
 import { Card, CardTitle, CardDescription } from '@/components/ui/Card';
 import { LinkButton } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { AdSlot } from '@/components/ads/AdSlot';
 
 interface Feature {
   icon: string;
@@ -118,6 +119,8 @@ export function HomePage() {
             <SignCard key={slug} sign={ZODIAC[slug]} />
           ))}
         </div>
+
+        <AdSlot className="mt-10" />
       </section>
 
       {/* Funcionalidades */}

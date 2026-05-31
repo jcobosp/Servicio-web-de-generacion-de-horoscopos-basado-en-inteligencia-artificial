@@ -265,9 +265,10 @@ export function TarotPage() {
               premiumHook={reading?.premium_hook}
               to="/tarot/avanzado"
             />
-            <AdSlot className="mt-8" />
           </>
         )}
+
+        <AdSlot className="mt-8" />
       </div>
     </>
   );

@@ -149,10 +149,7 @@ function ChartResult({ chart, isPremium }: { chart: NatalChart; isPremium: boole
           </div>
         </Card>
       ) : (
-        <>
-          <UpsellCard variant="natal" premiumHook={i.premium_hook} />
-          <AdSlot className="mt-8" />
-        </>
+        <UpsellCard variant="natal" premiumHook={i.premium_hook} />
       )}
     </>
   );
@@ -394,6 +391,8 @@ export function NatalChartPage() {
             )}
           </>
         )}
+
+        <AdSlot className="mt-8" />
       </div>
     </>
   );

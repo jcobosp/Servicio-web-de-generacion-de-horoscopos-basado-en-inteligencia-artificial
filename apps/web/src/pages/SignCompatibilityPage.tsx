@@ -128,8 +128,6 @@ function Result({ report }: { report: SignCompatReport }) {
           </span>
         </div>
       </Card>
-
-      <AdSlot className="mt-8" />
     </>
   );
 }
@@ -197,6 +195,8 @@ export function SignCompatibilityPage() {
             </Card>
           )}
         </div>
+
+        <AdSlot className="mt-8" />
       </div>
     </>
   );

@@ -14,6 +14,7 @@ import {
   writeConsent,
 } from './consent';
 import { recordCookieConsents } from './api';
+import { useIsPremium } from '@/features/billing/hooks';
 
 export interface ConsentChoice {
   analytics: boolean;
@@ -23,12 +24,12 @@ export interface ConsentChoice {
 interface ConsentContextValue {
   /** Elección actual, o null si el usuario todavía no ha decidido. */
   consent: ConsentState | null;
-  /** El banner debe estar visible (no hay decisión válida y vigente). */
+  /** El banner debe estar visible (sin decisión vigente y usuario no premium). */
   bannerVisible: boolean;
   /** El panel de personalización está abierto. */
   preferencesOpen: boolean;
+  /** Modelo "consentir o suscribirse": aceptar cookies y seguir en el plan gratuito. */
   acceptAll: () => void;
-  rejectAll: () => void;
   save: (choice: ConsentChoice) => void;
   openPreferences: () => void;
   closePreferences: () => void;
@@ -37,12 +38,14 @@ interface ConsentContextValue {
 const ConsentContext = createContext<ConsentContextValue | null>(null);
 
 export function ConsentProvider({ children }: { children: ReactNode }) {
+  const isPremium = useIsPremium();
+
   // Lectura síncrona de la cookie en el primer render (SPA sin SSR): evita el
   // parpadeo del banner y no necesita un efecto.
   const [consent, setConsent] = useState<ConsentState | null>(() =>
     readConsent(),
   );
-  const [bannerVisible, setBannerVisible] = useState<boolean>(() =>
+  const [bannerNeeded, setBannerNeeded] = useState<boolean>(() =>
     needsConsent(readConsent()),
   );
   const [preferencesOpen, setPreferencesOpen] = useState(false);
@@ -56,20 +59,21 @@ export function ConsentProvider({ children }: { children: ReactNode }) {
     };
     writeConsent(next);
     setConsent(next);
-    setBannerVisible(false);
+    setBannerNeeded(false);
     setPreferencesOpen(false);
     // Acreditación en BD (no bloqueante: si falla, la cookie ya es válida).
     void recordCookieConsents(choice).catch(() => undefined);
   }, []);
 
+  // "Aceptar y seguir gratis": consiente analítica + publicidad (plan gratuito).
   const acceptAll = useCallback(
     () => persist({ analytics: true, marketing: true }),
     [persist],
   );
-  const rejectAll = useCallback(
-    () => persist({ analytics: false, marketing: false }),
-    [persist],
-  );
+
+  // Modelo "consentir o suscribirse": a un usuario premium no se le piden cookies
+  // de publicidad (su plan no muestra anuncios), así que no le mostramos el banner.
+  const bannerVisible = bannerNeeded && !isPremium;
 
   const value = useMemo<ConsentContextValue>(
     () => ({
@@ -77,12 +81,11 @@ export function ConsentProvider({ children }: { children: ReactNode }) {
       bannerVisible,
       preferencesOpen,
       acceptAll,
-      rejectAll,
       save: persist,
       openPreferences: () => setPreferencesOpen(true),
       closePreferences: () => setPreferencesOpen(false),
     }),
-    [consent, bannerVisible, preferencesOpen, acceptAll, rejectAll, persist],
+    [consent, bannerVisible, preferencesOpen, acceptAll, persist],
   );
 
   return (

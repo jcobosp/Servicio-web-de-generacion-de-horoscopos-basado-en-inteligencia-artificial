@@ -5,6 +5,7 @@ import { Card, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { toast } from '@/components/ui/Toast';
+import { AdSlot } from '@/components/ads/AdSlot';
 import { PremiumGate } from '@/components/billing/PremiumGate';
 import {
   useAdvancedHistory,
@@ -377,6 +378,8 @@ export function AdvancedTarotPage() {
             <AdvancedTarotBody />
           </PremiumGate>
         </div>
+
+        <AdSlot className="mt-8" />
       </div>
     </>
   );
