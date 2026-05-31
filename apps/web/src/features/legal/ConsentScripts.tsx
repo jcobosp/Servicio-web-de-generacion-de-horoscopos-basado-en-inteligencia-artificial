@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useConsent } from './ConsentProvider';
+import { useIsPremium } from '@/features/billing/hooks';
 
 /**
  * Inyecta un <script> externo una sola vez, identificándolo por `id` para
@@ -36,6 +37,7 @@ function loadScriptOnce(
  */
 export function ConsentScripts() {
   const { consent } = useConsent();
+  const isPremium = useIsPremium();
 
   // Analítica (p. ej. Google Analytics) — solo con consentimiento "analytics".
   useEffect(() => {
@@ -48,8 +50,11 @@ export function ConsentScripts() {
     );
   }, [consent?.analytics]);
 
-  // Publicidad (Google AdSense) — solo con consentimiento "marketing".
+  // Publicidad (Google AdSense) — solo con consentimiento "marketing" y NUNCA
+  // para usuarios premium (el plan de pago es sin anuncios: no cargamos siquiera
+  // el script de terceros).
   useEffect(() => {
+    if (isPremium) return;
     if (!consent?.marketing) return;
     const adsClient = import.meta.env.VITE_ADSENSE_CLIENT as string | undefined;
     if (!adsClient) return;
@@ -58,7 +63,7 @@ export function ConsentScripts() {
       `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsClient}`,
       { crossorigin: 'anonymous' },
     );
-  }, [consent?.marketing]);
+  }, [consent?.marketing, isPremium]);
 
   return null;
 }
