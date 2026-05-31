@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '@/lib/seo';
 import { Link } from 'react-router-dom';
 import { Card, CardTitle } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { Button, LinkButton } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { AdSlot } from '@/components/ads/AdSlot';
 import { PremiumGate } from '@/components/billing/PremiumGate';
+import { useAuth } from '@/features/auth/AuthProvider';
 import { useProfile } from '@/features/profile/hooks';
 import {
   useCurrentReport,
@@ -429,14 +430,14 @@ function ReportBody({ kind }: { kind: ReportKind }) {
 
 function ReportsPage({ kind }: { kind: ReportKind }) {
   const meta = META[kind];
+  const { session } = useAuth();
   return (
     <>
-      <Helmet>
-        <title>{`${meta.title} · ${company.brand}`}</title>
-        <meta name="description" content={meta.lead} />
-        <meta name="robots" content="noindex" />
-        <link rel="canonical" href={`${company.siteUrl}${meta.route}`} />
-      </Helmet>
+      <Seo
+        title={`${meta.title} · ${company.brand}`}
+        description={meta.lead}
+        noindex
+      />
 
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
         <header>
@@ -445,9 +446,29 @@ function ReportsPage({ kind }: { kind: ReportKind }) {
         </header>
 
         <div className="mt-8">
-          <PremiumGate title={`${meta.title} es premium`} description={meta.gateDesc}>
-            <ReportBody kind={kind} />
-          </PremiumGate>
+          {!session ? (
+            <Card padding="lg" className="text-center">
+              <div aria-hidden="true" className="text-4xl">
+                📜
+              </div>
+              <p className="mt-3 text-graphite">
+                Para acceder a tus informes personalizados necesitas iniciar
+                sesión en tu cuenta.
+              </p>
+              <div className="mt-5 flex justify-center gap-3">
+                <LinkButton to="/login" variant="secondary">
+                  Iniciar sesión
+                </LinkButton>
+                <LinkButton to="/registro" variant="primary">
+                  Crear cuenta
+                </LinkButton>
+              </div>
+            </Card>
+          ) : (
+            <PremiumGate title={`${meta.title} es premium`} description={meta.gateDesc}>
+              <ReportBody kind={kind} />
+            </PremiumGate>
+          )}
         </div>
 
         <AdSlot className="mt-8" />

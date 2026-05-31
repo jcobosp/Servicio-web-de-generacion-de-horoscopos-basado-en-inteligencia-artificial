@@ -6,6 +6,7 @@ export function LegalNoticePage() {
     <LegalPage
       title="Aviso legal"
       description="Información del prestador del servicio Zodiaq conforme al artículo 10 de la LSSI-CE."
+      path="/aviso-legal"
     >
       <p>
         En cumplimiento del artículo 10 de la Ley 34/2002, de 11 de julio, de

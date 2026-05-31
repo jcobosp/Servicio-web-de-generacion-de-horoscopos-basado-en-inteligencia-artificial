@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '@/lib/seo';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { LinkButton } from '@/components/ui/Button';
@@ -96,14 +96,11 @@ export function NumerologyPage() {
 
   return (
     <>
-      <Helmet>
-        <title>{`Numerología: tu número del camino de vida · ${company.brand}`}</title>
-        <meta
-          name="description"
-          content="Calcula gratis tu número del camino de vida y tu año personal a partir de tu fecha de nacimiento, y descubre qué dicen de tu carácter, tu amor y tu momento actual."
-        />
-        <link rel="canonical" href={`${company.siteUrl}/numerologia`} />
-      </Helmet>
+      <Seo
+        title={`Numerología: tu número del camino de vida · ${company.brand}`}
+        description="Calcula gratis tu número del camino de vida y tu año personal a partir de tu fecha de nacimiento, y descubre qué dicen de tu carácter, tu amor y tu momento actual."
+        path="/numerologia"
+      />
 
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
         <header>

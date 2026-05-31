@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '@/lib/seo';
 import { Card } from '@/components/ui/Card';
 import { Select } from '@/components/ui/Select';
 import { Badge } from '@/components/ui/Badge';
@@ -139,14 +139,11 @@ export function SignCompatibilityPage() {
 
   return (
     <>
-      <Helmet>
-        <title>{`Compatibilidad de signos del zodiaco · ${company.brand}`}</title>
-        <meta
-          name="description"
-          content="Descubre la compatibilidad entre dos signos del zodiaco: amor, pasión, comunicación y los retos de cada pareja, con su puntuación de afinidad."
-        />
-        <link rel="canonical" href={`${company.siteUrl}/compatibilidad`} />
-      </Helmet>
+      <Seo
+        title={`Compatibilidad de signos del zodiaco · ${company.brand}`}
+        description="Descubre la compatibilidad entre dos signos del zodiaco: amor, pasión, comunicación y los retos de cada pareja, con su puntuación de afinidad."
+        path="/compatibilidad"
+      />
 
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
         <header>

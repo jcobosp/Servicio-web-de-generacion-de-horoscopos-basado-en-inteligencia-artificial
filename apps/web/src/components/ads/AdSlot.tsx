@@ -18,8 +18,11 @@ const ADSENSE_CLIENT = import.meta.env.VITE_ADSENSE_CLIENT as string | undefined
  * - El script lo carga `ConsentScripts`; aquí solo dibujamos la unidad.
  *
  * Sin `VITE_ADSENSE_CLIENT` (caso actual hasta tener dominio en producción) no
- * hay anuncio real: en desarrollo mostramos un placeholder para visualizar la
- * ubicación; en producción no se renderiza nada.
+ * hay anuncio real: mostramos una imagen de ejemplo (`/example-ad.svg`) para
+ * visualizar cómo quedará el anuncio en la card. En cuanto se configure
+ * `VITE_ADSENSE_CLIENT` + `slot`, el anuncio real de AdSense (bloque `<ins>`
+ * de arriba) sustituye automáticamente a la imagen de ejemplo. La imagen es un
+ * SVG estático local, sin tracking, así que no depende del consentimiento.
  */
 export function AdSlot({ slot, className }: AdSlotProps) {
   const isPremium = useIsPremium();
@@ -58,20 +61,31 @@ export function AdSlot({ slot, className }: AdSlotProps) {
     );
   }
 
-  // Placeholder de demostración (solo en desarrollo).
-  if (import.meta.env.DEV) {
-    return (
-      <div
-        aria-hidden="true"
-        className={cn(
-          'flex min-h-[90px] items-center justify-center rounded-xl border border-dashed border-slate-300 bg-mist text-xs uppercase tracking-wider text-silver',
-          className,
-        )}
+  // Aún no hay anuncio real (falta `VITE_ADSENSE_CLIENT` + `slot`, pendiente de
+  // producción): imagen de ejemplo para ver cómo quedará el anuncio en la card.
+  return (
+    <div
+      className={cn(
+        'overflow-hidden rounded-xl border border-slate-200',
+        className,
+      )}
+    >
+      <a
+        href="#"
+        onClick={(e) => e.preventDefault()}
+        aria-label="Anuncio de ejemplo"
+        className="block"
       >
-        Espacio publicitario {consent?.marketing ? '' : '(requiere consentimiento)'}
-      </div>
-    );
-  }
-
-  return null;
+        <img
+          src="/example-ad.svg"
+          alt="Anuncio de ejemplo"
+          width={728}
+          height={120}
+          loading="lazy"
+          decoding="async"
+          className="block h-auto w-full"
+        />
+      </a>
+    </div>
+  );
 }

@@ -1,13 +1,14 @@
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '@/lib/seo';
 import { LinkButton } from '@/components/ui/Button';
 
 export function NotFoundPage() {
   return (
     <>
-      <Helmet>
-        <title>Página no encontrada · Zodiaq</title>
-        <meta name="robots" content="noindex" />
-      </Helmet>
+      <Seo
+        title="Página no encontrada · Zodiaq"
+        description="La página que buscas no existe o se ha movido. Vuelve al inicio para seguir explorando tu horóscopo."
+        noindex
+      />
       <section className="mx-auto flex max-w-3xl flex-col items-center px-4 py-24 text-center sm:px-6">
         <div className="text-7xl" aria-hidden="true">
           ✦

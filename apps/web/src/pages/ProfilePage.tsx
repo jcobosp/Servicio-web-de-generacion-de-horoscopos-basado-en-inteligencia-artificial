@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '@/lib/seo';
 import { Card, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -92,10 +92,11 @@ export function ProfilePage() {
 
   return (
     <>
-      <Helmet>
-        <title>Mi perfil · Zodiaq</title>
-        <meta name="robots" content="noindex" />
-      </Helmet>
+      <Seo
+        title="Mi perfil · Zodiaq"
+        description="Tu perfil de Zodiaq: signo, racha, datos de la cuenta y preferencias."
+        noindex
+      />
 
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-8 flex items-center justify-between gap-4">

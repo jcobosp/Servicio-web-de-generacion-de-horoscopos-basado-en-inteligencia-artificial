@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '@/lib/seo';
 import { useSearchParams } from 'react-router-dom';
 import { Card, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -347,15 +347,11 @@ function AdvancedTarotBody() {
 export function AdvancedTarotPage() {
   return (
     <>
-      <Helmet>
-        <title>{`Tarot avanzado · ${company.brand}`}</title>
-        <meta
-          name="description"
-          content="Tiradas de tarot avanzadas: Cruz Celta de 10 cartas y Herradura de 7, interpretadas a fondo para tu momento vital."
-        />
-        <meta name="robots" content="noindex" />
-        <link rel="canonical" href={`${company.siteUrl}/tarot/avanzado`} />
-      </Helmet>
+      <Seo
+        title={`Tarot avanzado · ${company.brand}`}
+        description="Tiradas de tarot avanzadas: Cruz Celta de 10 cartas y Herradura de 7, interpretadas a fondo para tu momento vital."
+        noindex
+      />
 
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
         <header>

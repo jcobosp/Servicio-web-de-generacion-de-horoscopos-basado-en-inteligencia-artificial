@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { Seo, JsonLd, productSchema } from '@/lib/seo';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -147,13 +147,31 @@ export function PremiumPage() {
 
   return (
     <>
-      <Helmet>
-        <title>Zodiaq Premium · Suscripción astrológica completa</title>
-        <meta
-          name="description"
-          content="Carta natal completa, compatibilidad avanzada, reportes mensuales y anuales, tarot complejo y experiencia sin anuncios. Desde 4,99 €/mes."
-        />
-      </Helmet>
+      <Seo
+        title="Zodiaq Premium · Suscripción astrológica completa"
+        description="Carta natal completa, compatibilidad avanzada, reportes mensuales y anuales, tarot complejo y experiencia sin anuncios. Desde 4,99 €/mes."
+        path="/premium"
+      />
+      <JsonLd
+        data={productSchema({
+          name: 'Zodiaq Premium',
+          description:
+            'Carta natal completa, compatibilidad avanzada, reportes mensuales y anuales, tarot complejo y experiencia sin anuncios.',
+          path: '/premium',
+          offers: [
+            {
+              price: '4.99',
+              priceCurrency: 'EUR',
+              description: 'Suscripción mensual',
+            },
+            {
+              price: '49.99',
+              priceCurrency: 'EUR',
+              description: 'Suscripción anual',
+            },
+          ],
+        })}
+      />
 
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
         <header className="mx-auto max-w-3xl text-center">

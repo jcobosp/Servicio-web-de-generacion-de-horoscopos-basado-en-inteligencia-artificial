@@ -7,6 +7,7 @@ import { cn } from '@/lib/cn';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { signOut } from '@/features/auth/api';
 import { useStreak } from '@/features/streaks/hooks';
+import { prefetchRoute } from '@/app/route-prefetch';
 
 interface NavItem {
   label: string;
@@ -80,6 +81,8 @@ export function NavBar() {
             <NavLink
               key={item.to}
               to={item.to}
+              onMouseEnter={() => prefetchRoute(item.to)}
+              onFocus={() => prefetchRoute(item.to)}
               className={({ isActive }) =>
                 cn(
                   'rounded-lg px-3 py-2 text-sm font-medium transition',

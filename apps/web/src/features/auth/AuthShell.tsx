@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '@/lib/seo';
 
 interface AuthShellProps {
   title: string;
@@ -19,10 +19,11 @@ export function AuthShell({
 }: AuthShellProps) {
   return (
     <>
-      <Helmet>
-        <title>{metaTitle}</title>
-        <meta name="robots" content="noindex" />
-      </Helmet>
+      <Seo
+        title={metaTitle}
+        description="Accede a tu cuenta de Zodiaq para consultar tu horóscopo, tu carta natal y tus lecturas personalizadas."
+        noindex
+      />
       <div className="mx-auto flex max-w-md flex-col px-4 py-12 sm:py-16">
         <Link
           to="/"

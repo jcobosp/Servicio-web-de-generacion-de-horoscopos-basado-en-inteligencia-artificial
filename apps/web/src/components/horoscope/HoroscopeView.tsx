@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, useParams } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import { Seo, JsonLd, articleSchema } from '@/lib/seo';
 import { AreaTabs } from './AreaTabs';
 import { HoroscopeCard } from './HoroscopeCard';
 import { SignPicker } from './SignPicker';
@@ -58,13 +58,11 @@ export function HoroscopeView({ scope }: HoroscopeViewProps) {
   if (!sign || !info) {
     return (
       <>
-        <Helmet>
-          <title>{`${meta.title} · ${company.brand}`}</title>
-          <meta
-            name="description"
-            content={`Consulta tu horóscopo ${meta.label} gratis, por signo y por área: amor, salud, dinero y trabajo.`}
-          />
-        </Helmet>
+        <Seo
+          title={`${meta.title} · ${company.brand}`}
+          description={`Consulta tu horóscopo ${meta.label} gratis, por signo y por área: amor, salud, dinero y trabajo.`}
+          path={`/horoscopo/${meta.path}`}
+        />
         <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
           <header className="text-center">
             <h1 className="font-display text-3xl text-ink sm:text-4xl">
@@ -90,17 +88,22 @@ export function HoroscopeView({ scope }: HoroscopeViewProps) {
 
   return (
     <>
-      <Helmet>
-        <title>{`${meta.title} de ${info.name} · ${company.brand}`}</title>
-        <meta
-          name="description"
-          content={`Horóscopo ${meta.label} de ${info.name} para ${meta.periodHint}: amor, salud, dinero y trabajo. Escrito a diario con IA.`}
-        />
-        <link
-          rel="canonical"
-          href={`${company.siteUrl}/horoscopo/${meta.path}/${info.slug}`}
-        />
-      </Helmet>
+      <Seo
+        title={`${meta.title} de ${info.name} · ${company.brand}`}
+        description={`Horóscopo ${meta.label} de ${info.name} para ${meta.periodHint}: amor, salud, dinero y trabajo. Escrito a diario con IA.`}
+        path={`/horoscopo/${meta.path}/${info.slug}`}
+        type="article"
+      />
+      <JsonLd
+        data={articleSchema({
+          headline: `${meta.title} de ${info.name}`,
+          description: `Horóscopo ${meta.label} de ${info.name} para ${meta.periodHint}: amor, salud, dinero y trabajo.`,
+          path: `/horoscopo/${meta.path}/${info.slug}`,
+          datePublished:
+            (query.data?.status === 'ok' && query.data.period_start) ||
+            new Date().toISOString().slice(0, 10),
+        })}
+      />
 
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
         <header className="flex items-center gap-4">

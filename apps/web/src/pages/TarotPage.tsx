@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '@/lib/seo';
 import { Card } from '@/components/ui/Card';
 import { Button, LinkButton } from '@/components/ui/Button';
 import { UpsellCard } from '@/components/horoscope/UpsellCard';
@@ -137,14 +137,11 @@ export function TarotPage() {
 
   return (
     <>
-      <Helmet>
-        <title>{`Tarot · ${company.brand}`}</title>
-        <meta
-          name="description"
-          content="Tu tirada de tarot diaria gratuita: una o tres cartas interpretadas para tu momento presente."
-        />
-        <link rel="canonical" href={`${company.siteUrl}/tarot/simple`} />
-      </Helmet>
+      <Seo
+        title={`Tarot · ${company.brand}`}
+        description="Tu tirada de tarot diaria gratuita: una o tres cartas interpretadas para tu momento presente."
+        path="/tarot/simple"
+      />
 
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
         <header>

@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '@/lib/seo';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Skeleton } from '@/components/ui/Skeleton';
@@ -144,13 +144,11 @@ export function EnergyOfDayPage() {
   if (!sign || !info) {
     return (
       <>
-        <Helmet>
-          <title>{`Energía del día · ${company.brand}`}</title>
-          <meta
-            name="description"
-            content="La energía astrológica de hoy para tu signo: tu nivel del día, en qué poner el foco y qué cuidar."
-          />
-        </Helmet>
+        <Seo
+          title={`Energía del día · ${company.brand}`}
+          description="La energía astrológica de hoy para tu signo: tu nivel del día, en qué poner el foco y qué cuidar."
+          path="/energia-del-dia"
+        />
         <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
           <header className="text-center">
             <h1 className="font-display text-3xl text-ink sm:text-4xl">
@@ -172,17 +170,12 @@ export function EnergyOfDayPage() {
 
   return (
     <>
-      <Helmet>
-        <title>{`Energía del día de ${info.name} · ${company.brand}`}</title>
-        <meta
-          name="description"
-          content={`La energía astrológica de hoy para ${info.name}: tu nivel del día, en qué poner el foco y qué cuidar.`}
-        />
-        <link
-          rel="canonical"
-          href={`${company.siteUrl}/energia-del-dia/${info.slug}`}
-        />
-      </Helmet>
+      <Seo
+        title={`Energía del día de ${info.name} · ${company.brand}`}
+        description={`La energía astrológica de hoy para ${info.name}: tu nivel del día, en qué poner el foco y qué cuidar.`}
+        path={`/energia-del-dia/${info.slug}`}
+        type="article"
+      />
 
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
         <header className="flex items-center gap-4">

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { Seo } from '@/lib/seo';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Card, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -121,10 +121,11 @@ export function SubscriptionPage() {
 
   return (
     <>
-      <Helmet>
-        <title>Mi suscripción · Zodiaq</title>
-        <meta name="robots" content="noindex" />
-      </Helmet>
+      <Seo
+        title="Mi suscripción · Zodiaq"
+        description="Consulta y gestiona tu suscripción a Zodiaq Premium: estado del plan, renovación y portal de pago."
+        noindex
+      />
 
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-2 text-sm text-graphite">
