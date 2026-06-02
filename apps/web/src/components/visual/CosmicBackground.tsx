@@ -28,9 +28,9 @@ interface CosmicBackgroundProps {
 }
 
 const INTENSITY: Record<NonNullable<CosmicBackgroundProps['intensity']>, string> = {
-  soft: 'opacity-40',
-  normal: 'opacity-60',
-  bold: 'opacity-80',
+  soft: 'opacity-25',
+  normal: 'opacity-40',
+  bold: 'opacity-60',
 };
 
 /**

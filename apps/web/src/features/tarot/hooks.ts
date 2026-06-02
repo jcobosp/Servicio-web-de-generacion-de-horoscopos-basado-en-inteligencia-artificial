@@ -1,6 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/features/auth/AuthProvider';
-import { drawTarot, fetchLastReading } from './api';
+import {
+  createSimpleTarotPayment,
+  drawTarot,
+  fetchLastReading,
+  fetchTarotCredits,
+  fetchTarotHistory,
+} from './api';
 import type { SpreadType } from './types';
 
 const COOLDOWN_MS = 24 * 60 * 60 * 1000;
@@ -17,6 +23,40 @@ export function useLastReading() {
   });
 }
 
+/** Historial de tiradas simples del usuario (requiere sesión). */
+export function useTarotHistory() {
+  const { user } = useAuth();
+  const userId = user?.id;
+  return useQuery({
+    queryKey: ['tarot-history', userId],
+    enabled: Boolean(userId),
+    staleTime: 1000 * 60,
+    queryFn: () => fetchTarotHistory(userId!),
+  });
+}
+
+/** Créditos de tirada extra disponibles (sin consumir). */
+export function useTarotCredits() {
+  const { user } = useAuth();
+  const userId = user?.id;
+  return useQuery({
+    queryKey: ['tarot-credits', userId],
+    enabled: Boolean(userId),
+    staleTime: 1000 * 30,
+    queryFn: () => fetchTarotCredits(userId!),
+  });
+}
+
+/** Inicia el pago puntual (1,99 €) de una tirada extra y redirige a Stripe. */
+export function useBuySimpleTarotCredit() {
+  return useMutation({
+    mutationFn: () => createSimpleTarotPayment(),
+    onSuccess: (url) => {
+      window.location.assign(url);
+    },
+  });
+}
+
 /** Mutación que ejecuta una nueva tirada. */
 export function useDrawTarot() {
   const { user } = useAuth();
@@ -24,8 +64,12 @@ export function useDrawTarot() {
   return useMutation({
     mutationFn: (vars: { spread: SpreadType; question: string }) =>
       drawTarot(vars.spread, vars.question),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tarot-last', user?.id] });
+    onSuccess: (res) => {
+      if (res.status === 'ok') {
+        queryClient.invalidateQueries({ queryKey: ['tarot-last', user?.id] });
+        queryClient.invalidateQueries({ queryKey: ['tarot-history', user?.id] });
+        queryClient.invalidateQueries({ queryKey: ['tarot-credits', user?.id] });
+      }
     },
   });
 }

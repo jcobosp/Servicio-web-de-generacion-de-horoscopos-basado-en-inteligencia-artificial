@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { ShieldCheck, BarChart3, Megaphone, Crown } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
 import { Button, LinkButton } from '@/components/ui/Button';
 import { useIsPremium } from '@/features/billing/hooks';
@@ -9,6 +11,8 @@ import type { ConsentChoice } from './ConsentProvider';
 interface CategoryProps {
   title: string;
   description: string;
+  Icon: LucideIcon;
+  color: string;
   checked: boolean;
   onChange?: (value: boolean) => void;
   /** Categoría obligatoria (técnicas): siempre activa, no editable. */
@@ -18,17 +22,26 @@ interface CategoryProps {
 function Category({
   title,
   description,
+  Icon,
+  color,
   checked,
   onChange,
   locked,
 }: CategoryProps) {
   return (
-    <div className="flex items-start justify-between gap-4 rounded-xl border border-slate-200 p-4">
-      <div>
-        <p className="font-medium text-ink">{title}</p>
-        <p className="mt-1 text-sm leading-relaxed text-graphite">
-          {description}
-        </p>
+    <div className="flex items-start justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-4 transition-colors hover:border-slate-300">
+      <div className="flex items-start gap-3">
+        <span
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-white shadow-soft"
+          style={{ backgroundColor: color }}
+          aria-hidden="true"
+        >
+          <Icon className="h-5 w-5" />
+        </span>
+        <div>
+          <p className="font-display font-bold text-ink">{title}</p>
+          <p className="mt-1 text-sm leading-relaxed text-graphite">{description}</p>
+        </div>
       </div>
       <label className="mt-0.5 inline-flex shrink-0 cursor-pointer items-center">
         <span className="sr-only">{title}</span>
@@ -96,12 +109,16 @@ function PreferencesForm({ initial, isPremium, onSave, onCloseLink }: Preference
         <Category
           title="Técnicas (necesarias)"
           description="Imprescindibles para iniciar sesión, mantener la sesión y recordar tu elección de cookies. No se pueden desactivar."
+          Icon={ShieldCheck}
+          color="#059669"
           checked
           locked
         />
         <Category
           title="Analíticas"
           description="Nos ayudan a entender cómo se usa la plataforma para mejorarla. Solo se activan con tu permiso."
+          Icon={BarChart3}
+          color="#4f46e5"
           checked={analytics}
           onChange={setAnalytics}
         />
@@ -109,6 +126,8 @@ function PreferencesForm({ initial, isPremium, onSave, onCloseLink }: Preference
           <Category
             title="Publicidad"
             description="Tu plan Premium no muestra anuncios: las cookies de publicidad están desactivadas."
+            Icon={Megaphone}
+            color="#94a3b8"
             checked={false}
             locked
           />
@@ -116,6 +135,8 @@ function PreferencesForm({ initial, isPremium, onSave, onCloseLink }: Preference
           <Category
             title="Publicidad"
             description="En el plan gratuito la publicidad (Google AdSense) financia el servicio y va incluida al usarlo gratis. ¿No quieres anuncios? Hazte Premium y se desactivan."
+            Icon={Megaphone}
+            color="#d97706"
             checked
             locked
           />
@@ -129,6 +150,7 @@ function PreferencesForm({ initial, isPremium, onSave, onCloseLink }: Preference
             variant="secondary"
             className="sm:mr-auto"
             onClick={onCloseLink}
+            leftIcon={<Crown className="h-4 w-4" />}
           >
             Suscribirme sin anuncios
           </LinkButton>

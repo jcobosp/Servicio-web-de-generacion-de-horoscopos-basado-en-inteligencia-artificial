@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import type { MotionProps } from 'framer-motion';
-import { Flame, Menu, Sparkles, X } from 'lucide-react';
+import { ChevronDown, Flame, Menu, Sparkles, X } from 'lucide-react';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { Button, LinkButton } from '@/components/ui/Button';
 import { Logo } from '@/components/layout/Logo';
@@ -17,15 +17,143 @@ interface NavItem {
   to: string;
 }
 
-const navItems: NavItem[] = [
+const mainItems: NavItem[] = [
   { label: 'Horóscopo', to: '/horoscopo/diario' },
   { label: 'Tarot', to: '/tarot/simple' },
   { label: 'Carta natal', to: '/carta-natal/basica' },
   { label: 'Compatibilidad', to: '/compatibilidad' },
   { label: 'Numerología', to: '/numerologia' },
-  { label: 'Reportes', to: '/reportes/mensual' },
-  { label: 'Premium', to: '/premium' },
 ];
+
+/** Entradas agrupadas bajo el desplegable «Más». */
+const moreItems: NavItem[] = [
+  { label: 'Energía del día', to: '/energia-del-dia' },
+  { label: 'Eventos astrológicos', to: '/eventos-astrologicos' },
+  { label: 'Reportes', to: '/reportes/mensual' },
+];
+
+const premiumItem: NavItem = { label: 'Premium', to: '/premium' };
+
+/** Enlace de escritorio con subrayado animado (compartido por `layoutId`). */
+function DesktopNavLink({
+  item,
+  reduce,
+}: {
+  item: NavItem;
+  reduce: boolean | null;
+}) {
+  const isPremium = item.to === '/premium';
+  return (
+    <NavLink
+      to={item.to}
+      onMouseEnter={() => prefetchRoute(item.to)}
+      onFocus={() => prefetchRoute(item.to)}
+      className="relative rounded-lg px-3 py-2 text-base font-semibold transition"
+    >
+      {({ isActive }) => (
+        <span
+          className={cn(
+            'relative z-10 flex items-center gap-1',
+            isPremium
+              ? isActive
+                ? 'text-gold-600'
+                : 'text-gold-600 hover:text-gold-500'
+              : isActive
+                ? 'text-cosmos-700'
+                : 'text-graphite hover:text-ink',
+          )}
+        >
+          {isPremium && (
+            <Sparkles className="h-3.5 w-3.5" strokeWidth={2.4} aria-hidden="true" />
+          )}
+          {item.label}
+          {isActive &&
+            (reduce ? (
+              <span
+                className={cn(
+                  'absolute -bottom-1.5 left-0 right-0 mx-auto h-0.5 w-5 rounded-full bg-gradient-to-r',
+                  isPremium ? 'from-gold-400 to-gold-600' : 'from-cosmos-600 to-aurora-500',
+                )}
+              />
+            ) : (
+              <motion.span
+                layoutId="nav-underline"
+                className={cn(
+                  'absolute -bottom-1.5 left-1 right-1 h-0.5 rounded-full bg-gradient-to-r',
+                  isPremium ? 'from-gold-400 to-gold-600' : 'from-cosmos-600 to-aurora-500',
+                )}
+                transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+              />
+            ))}
+        </span>
+      )}
+    </NavLink>
+  );
+}
+
+/** Desplegable «Más» (hover/focus, sin estado) con rutas secundarias. */
+function MoreDropdown() {
+  return (
+    <div className="group/more relative">
+      <button
+        type="button"
+        aria-haspopup="menu"
+        className="flex items-center gap-1 rounded-lg px-3 py-2 text-base font-semibold text-graphite transition hover:text-ink group-focus-within/more:text-ink"
+      >
+        Más
+        <ChevronDown
+          className="h-4 w-4 transition-transform duration-200 group-hover/more:rotate-180 group-focus-within/more:rotate-180"
+          aria-hidden="true"
+        />
+      </button>
+      <div className="invisible absolute right-0 top-full z-50 pt-2 opacity-0 transition-all duration-150 group-hover/more:visible group-hover/more:opacity-100 group-focus-within/more:visible group-focus-within/more:opacity-100">
+        <div className="min-w-[15rem] rounded-2xl border border-slate-200 bg-white p-2 shadow-lift">
+          {moreItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              onMouseEnter={() => prefetchRoute(item.to)}
+              onFocus={() => prefetchRoute(item.to)}
+              className={({ isActive }) =>
+                cn(
+                  'block rounded-xl px-3 py-2.5 text-base font-semibold transition',
+                  isActive
+                    ? 'bg-cosmos-50 text-cosmos-700'
+                    : 'text-graphite hover:bg-mist hover:text-ink',
+                )
+              }
+            >
+              {item.label}
+            </NavLink>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Enlace del menú móvil (incluye estilo premium opcional). */
+function MobileLink({ item, onClose }: { item: NavItem; onClose: () => void }) {
+  const isPremium = item.to === '/premium';
+  return (
+    <NavLink
+      to={item.to}
+      onClick={onClose}
+      className={({ isActive }) =>
+        cn(
+          'flex items-center gap-2 rounded-xl px-3 py-3 text-base font-medium',
+          isActive ? 'bg-cosmos-50 text-cosmos-700' : 'text-graphite hover:bg-mist',
+          isPremium && 'text-gold-600',
+        )
+      }
+    >
+      {isPremium && (
+        <Sparkles className="h-4 w-4" strokeWidth={2.4} aria-hidden="true" />
+      )}
+      {item.label}
+    </NavLink>
+  );
+}
 
 export function NavBar() {
   const { scrolled } = useScrollDirection(80);
@@ -52,6 +180,8 @@ export function NavBar() {
     navigate('/', { replace: true });
   }
 
+  const closeMenu = () => setOpen(false);
+
   return (
     <header className="sticky top-0 z-50 w-full px-3 pt-2 sm:px-4 sm:pt-3 lg:px-6">
       <div className="mx-auto max-w-7xl">
@@ -68,56 +198,11 @@ export function NavBar() {
 
         {/* Navegación escritorio */}
         <nav aria-label="Principal" className="hidden items-center gap-0.5 lg:flex">
-          {navItems.map((item) => {
-            const isPremium = item.to === '/premium';
-            return (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                onMouseEnter={() => prefetchRoute(item.to)}
-                onFocus={() => prefetchRoute(item.to)}
-                className="relative rounded-lg px-3 py-2 text-sm font-medium transition"
-              >
-                {({ isActive }) => (
-                  <span
-                    className={cn(
-                      'relative z-10 flex items-center gap-1',
-                      isPremium
-                        ? isActive
-                          ? 'text-gold-600'
-                          : 'text-gold-600 hover:text-gold-500'
-                        : isActive
-                          ? 'text-cosmos-700'
-                          : 'text-graphite hover:text-ink',
-                    )}
-                  >
-                    {isPremium && (
-                      <Sparkles className="h-3.5 w-3.5" strokeWidth={2.4} aria-hidden="true" />
-                    )}
-                    {item.label}
-                    {isActive &&
-                      (reduce ? (
-                        <span
-                          className={cn(
-                            'absolute -bottom-1.5 left-0 right-0 mx-auto h-0.5 w-5 rounded-full bg-gradient-to-r',
-                            isPremium ? 'from-gold-400 to-gold-600' : 'from-cosmos-600 to-aurora-500',
-                          )}
-                        />
-                      ) : (
-                        <motion.span
-                          layoutId="nav-underline"
-                          className={cn(
-                            'absolute -bottom-1.5 left-1 right-1 h-0.5 rounded-full bg-gradient-to-r',
-                            isPremium ? 'from-gold-400 to-gold-600' : 'from-cosmos-600 to-aurora-500',
-                          )}
-                          transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                        />
-                      ))}
-                  </span>
-                )}
-              </NavLink>
-            );
-          })}
+          {mainItems.map((item) => (
+            <DesktopNavLink key={item.to} item={item} reduce={reduce} />
+          ))}
+          <MoreDropdown />
+          <DesktopNavLink item={premiumItem} reduce={reduce} />
         </nav>
 
         {/* Acciones escritorio */}
@@ -176,27 +261,16 @@ export function NavBar() {
           >
             <div className="px-4 py-4 sm:px-6">
               <nav aria-label="Móvil" className="flex flex-col gap-1">
-                {navItems.map((item) => (
-                  <NavLink
-                    key={item.to}
-                    to={item.to}
-                    onClick={() => setOpen(false)}
-                    className={({ isActive }) =>
-                      cn(
-                        'flex items-center gap-2 rounded-xl px-3 py-3 text-base font-medium',
-                        isActive
-                          ? 'bg-cosmos-50 text-cosmos-700'
-                          : 'text-graphite hover:bg-mist',
-                        item.to === '/premium' && 'text-gold-600',
-                      )
-                    }
-                  >
-                    {item.to === '/premium' && (
-                      <Sparkles className="h-4 w-4" strokeWidth={2.4} aria-hidden="true" />
-                    )}
-                    {item.label}
-                  </NavLink>
+                {mainItems.map((item) => (
+                  <MobileLink key={item.to} item={item} onClose={closeMenu} />
                 ))}
+                <p className="px-3 pb-1 pt-3 text-xs font-bold uppercase tracking-[0.14em] text-silver">
+                  Más
+                </p>
+                {moreItems.map((item) => (
+                  <MobileLink key={item.to} item={item} onClose={closeMenu} />
+                ))}
+                <MobileLink item={premiumItem} onClose={closeMenu} />
               </nav>
               {session ? (
                 <div className="mt-4 grid grid-cols-2 gap-2">

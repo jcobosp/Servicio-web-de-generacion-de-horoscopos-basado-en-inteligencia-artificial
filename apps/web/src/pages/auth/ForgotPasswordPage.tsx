@@ -6,6 +6,8 @@ import { useZodForm } from '@/hooks/useZodForm';
 import { forgotPasswordSchema } from '@/features/auth/validation';
 import { requestPasswordReset, authErrorMessage } from '@/features/auth/api';
 import { AuthShell } from '@/features/auth/AuthShell';
+import { Shine } from '@/components/visual/Shine';
+import { MailCheck, KeyRound, ShieldCheck } from 'lucide-react';
 
 export function ForgotPasswordPage() {
   const [submitting, setSubmitting] = useState(false);
@@ -35,6 +37,19 @@ export function ForgotPasswordPage() {
     <AuthShell
       title="Recupera tu contraseña"
       metaTitle="Recuperar contraseña · Zodiaq"
+      variant="astral"
+      pitch={
+        <>
+          Volvamos a
+          <br />
+          <Shine gold>conectarte</Shine>.
+        </>
+      }
+      highlights={[
+        { icon: MailCheck, text: 'Te enviamos un enlace seguro a tu correo' },
+        { icon: KeyRound, text: 'Eliges una contraseña nueva en segundos' },
+        { icon: ShieldCheck, text: 'Tu cuenta, siempre protegida' },
+      ]}
       subtitle={
         sent
           ? undefined

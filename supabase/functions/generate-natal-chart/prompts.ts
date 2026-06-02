@@ -77,6 +77,7 @@ TÉCNICAS PSICOLÓGICAS (aplícalas con naturalidad, sin nombrarlas):
 
 REGLAS:
 - Trata a la persona de "tú".
+- NEUTRALIDAD DE GÉNERO (obligatorio): NO conoces el género de la persona, así que NO lo asumas en ningún momento. Evita vocativos y adjetivos con marca de género ("querida"/"querido", "bienvenida", "preparada", "sensible y atenta"...): usa fórmulas neutras (p. ej. "te doy la bienvenida", "tu sensibilidad", "alguien atento a los detalles") o reformula la frase. El texto debe sonar natural y valer EXACTAMENTE igual para cualquier persona.
 - "intro": integra Sol + Luna + Ascendente como UNA sola persona coherente, no tres descripciones separadas.
 - "sun": interpreta el Sol en ${pos.sun.sign_name}.
 - "moon": interpreta la Luna en ${pos.moon.sign_name}.

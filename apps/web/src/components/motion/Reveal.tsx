@@ -5,10 +5,10 @@ import type { ReactNode } from 'react';
 type Direction = 'up' | 'down' | 'left' | 'right' | 'none';
 
 const OFFSET: Record<Direction, { x: number; y: number }> = {
-  up: { x: 0, y: 28 },
-  down: { x: 0, y: -28 },
-  left: { x: 28, y: 0 },
-  right: { x: -28, y: 0 },
+  up: { x: 0, y: 44 },
+  down: { x: 0, y: -44 },
+  left: { x: 44, y: 0 },
+  right: { x: -44, y: 0 },
   none: { x: 0, y: 0 },
 };
 
@@ -33,7 +33,7 @@ export function Reveal({
   children,
   direction = 'up',
   delay = 0,
-  amount = 0.2,
+  amount = 0.3,
   once = true,
   className,
 }: RevealProps) {
@@ -46,7 +46,7 @@ export function Reveal({
         initial: { opacity: 0, x: o.x, y: o.y },
         whileInView: { opacity: 1, x: 0, y: 0 },
         viewport: { once, amount },
-        transition: { duration: 0.6, delay, ease: EASE },
+        transition: { duration: 0.9, delay, ease: EASE },
       };
 
   return (
@@ -70,8 +70,8 @@ interface RevealStaggerProps {
  */
 export function RevealStagger({
   children,
-  stagger = 0.09,
-  amount = 0.15,
+  stagger = 0.14,
+  amount = 0.2,
   once = true,
   className,
 }: RevealStaggerProps) {
@@ -97,8 +97,8 @@ export function RevealStagger({
 }
 
 const ITEM_VARIANTS = {
-  hidden: { opacity: 0, y: 28 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: EASE } },
+  hidden: { opacity: 0, y: 44 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.85, ease: EASE } },
 };
 
 interface RevealItemProps {

@@ -1,12 +1,13 @@
 import type { ElementType, HTMLAttributes, ReactNode } from 'react';
 import { cn } from '@/lib/cn';
 
-type SectionWidth = 'default' | 'wide' | 'narrow' | 'full';
+type SectionWidth = 'default' | 'wide' | 'xwide' | 'narrow' | 'full';
 
 const WIDTHS: Record<SectionWidth, string> = {
   narrow: 'max-w-3xl',
   default: 'max-w-6xl',
   wide: 'max-w-7xl',
+  xwide: 'max-w-[110rem]',
   full: 'max-w-none',
 };
 

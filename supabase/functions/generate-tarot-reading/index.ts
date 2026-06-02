@@ -122,27 +122,49 @@ Deno.serve(async (req) => {
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
   );
 
-  // --- Cooldown gratuito de 24h --------------------------------------------
+  // --- Cooldown gratuito de 24h (+ créditos de pago puntual) ---------------
+  // Solo cuentan para el cooldown las tiradas GRATUITAS (is_premium_spread=false
+  // y billing='included'). Si estás en cooldown pero tienes un crédito comprado
+  // (1,99 €), lo consumes y haces una tirada extra inmediata (billing='paid').
   const sinceIso = new Date(Date.now() - COOLDOWN_MS).toISOString();
   const { data: recent } = await admin
     .from('tarot_readings')
     .select('created_at')
     .eq('user_id', userId)
+    .eq('is_premium_spread', false)
+    .eq('billing', 'included')
     .gte('created_at', sinceIso)
     .order('created_at', { ascending: false })
     .limit(1)
     .maybeSingle();
 
+  let billing: 'included' | 'paid' = 'included';
+  let creditId: string | null = null;
+
   if (recent) {
-    const nextAt = new Date(new Date(recent.created_at).getTime() + COOLDOWN_MS);
-    return json(
-      {
-        status: 'cooldown',
-        message: 'Ya has hecho tu tirada gratuita. Vuelve mañana para una nueva.',
-        next_available_at: nextAt.toISOString(),
-      },
-      429,
-    );
+    // En cooldown: ¿hay un crédito de tirada extra disponible?
+    const { data: credit } = await admin
+      .from('simple_tarot_credits')
+      .select('id')
+      .eq('user_id', userId)
+      .is('consumed_at', null)
+      .order('created_at', { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    if (!credit) {
+      const nextAt = new Date(new Date(recent.created_at).getTime() + COOLDOWN_MS);
+      return json(
+        {
+          status: 'cooldown',
+          message: 'Ya has hecho tu tirada gratuita. Vuelve mañana para una nueva.',
+          next_available_at: nextAt.toISOString(),
+        },
+        429,
+      );
+    }
+    billing = 'paid';
+    creditId = credit.id as string;
   }
 
   // --- Robar cartas (servidor) ---------------------------------------------
@@ -215,9 +237,21 @@ Deno.serve(async (req) => {
       cards: content.cards,
       interpretation: content.summary,
       question,
+      billing,
     })
     .select('id, created_at')
     .single();
+
+  // Si la tirada fue de pago, consumimos el crédito ahora (tras guardar con
+  // éxito, para no gastarlo si la generación hubiera fallado). El guard
+  // `consumed_at is null` evita doble gasto en condiciones de carrera.
+  if (creditId) {
+    await admin
+      .from('simple_tarot_credits')
+      .update({ consumed_at: new Date().toISOString() })
+      .eq('id', creditId)
+      .is('consumed_at', null);
+  }
 
   await logCall(admin, {
     kind: 'tarot', spread, cards: drawn.length,

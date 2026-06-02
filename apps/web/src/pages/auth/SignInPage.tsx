@@ -7,6 +7,8 @@ import { signInSchema } from '@/features/auth/validation';
 import { signIn, authErrorMessage } from '@/features/auth/api';
 import { AuthShell } from '@/features/auth/AuthShell';
 import { useAuth } from '@/features/auth/AuthProvider';
+import { Shine } from '@/components/visual/Shine';
+import { Flame, Sparkles, Moon } from 'lucide-react';
 
 interface LocationState {
   from?: string;
@@ -47,6 +49,19 @@ export function SignInPage() {
       title="Inicia sesión"
       metaTitle="Iniciar sesión · Zodiaq"
       subtitle="Tu horóscopo te está esperando."
+      variant="cosmos"
+      pitch={
+        <>
+          Bienvenido de
+          <br />
+          vuelta a <Shine gold>Zodiaq</Shine>.
+        </>
+      }
+      highlights={[
+        { icon: Sparkles, text: 'Tu lectura de hoy, recién escrita para ti' },
+        { icon: Flame, text: 'Tu racha sigue justo donde la dejaste' },
+        { icon: Moon, text: 'Tu carta y tus tiradas, siempre a mano' },
+      ]}
       footer={
         <>
           ¿Aún no tienes cuenta?{' '}
