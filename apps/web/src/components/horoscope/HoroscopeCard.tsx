@@ -1,5 +1,5 @@
+import { Hash, Palette, Sparkle } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
 import { Skeleton } from '@/components/ui/Skeleton';
 import type { HoroscopeResponse } from '@/features/horoscope/types';
 
@@ -22,6 +22,34 @@ function SoftMessage({ message }: { message: string }) {
   );
 }
 
+/** Píldora de dato (número/color/palabra) con el acento del signo. */
+function DataPill({
+  icon: Icon,
+  label,
+  value,
+  accent,
+}: {
+  icon: typeof Hash;
+  label: string;
+  value: string;
+  accent: string;
+}) {
+  return (
+    <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-2 shadow-soft">
+      <span
+        className="flex h-6 w-6 items-center justify-center rounded-full text-white"
+        style={{ backgroundColor: accent }}
+        aria-hidden="true"
+      >
+        <Icon className="h-3.5 w-3.5" />
+      </span>
+      <span className="text-sm font-medium text-graphite">
+        {label}: <span className="font-bold text-ink">{value}</span>
+      </span>
+    </div>
+  );
+}
+
 export function HoroscopeCard({
   isLoading,
   isError,
@@ -31,16 +59,16 @@ export function HoroscopeCard({
   if (isLoading) {
     return (
       <Card padding="lg">
-        <Skeleton className="h-7 w-3/4" />
-        <div className="mt-5 space-y-2.5">
+        <Skeleton className="h-9 w-3/4" />
+        <div className="mt-6 space-y-2.5">
           <Skeleton className="h-4 w-full" />
           <Skeleton className="h-4 w-full" />
           <Skeleton className="h-4 w-5/6" />
           <Skeleton className="h-4 w-11/12" />
         </div>
         <div className="mt-6 flex gap-2">
-          <Skeleton className="h-7 w-24 rounded-full" />
-          <Skeleton className="h-7 w-24 rounded-full" />
+          <Skeleton className="h-9 w-28 rounded-full" />
+          <Skeleton className="h-9 w-28 rounded-full" />
         </div>
       </Card>
     );
@@ -63,34 +91,62 @@ export function HoroscopeCard({
   const c = data.content;
 
   return (
-    <Card padding="lg">
+    <Card padding="lg" className="relative overflow-hidden">
+      {/* Acento de color del signo en el borde superior */}
+      <span
+        aria-hidden="true"
+        className="absolute inset-x-0 top-0 h-1.5"
+        style={{
+          backgroundImage: `linear-gradient(90deg, ${accent}, transparent)`,
+        }}
+      />
+
       <div className="flex items-start gap-3">
-        <span aria-hidden="true" className="text-3xl leading-none">
+        <span aria-hidden="true" className="text-4xl leading-none">
           {c.mood_emoji}
         </span>
         <h2
-          className="font-display text-2xl leading-tight sm:text-3xl"
+          className="font-display text-3xl font-extrabold leading-[1.05] tracking-tight sm:text-4xl"
           style={{ color: accent }}
         >
           {c.headline}
         </h2>
       </div>
 
-      <p className="mt-5 whitespace-pre-line leading-relaxed text-graphite">
+      <p className="mt-6 whitespace-pre-line text-lg leading-relaxed text-graphite">
         {c.body}
       </p>
 
       {c.disclaimer && (
-        <p className="mt-4 rounded-lg bg-mist px-3 py-2 text-xs text-silver">
+        <p className="mt-5 rounded-xl bg-mist px-4 py-2.5 text-xs text-silver">
           {c.disclaimer}
         </p>
       )}
 
-      <div className="mt-6 flex flex-wrap items-center gap-2">
-        <Badge tone="cosmos">Nº de la suerte: {c.lucky_number}</Badge>
-        <Badge tone="neutral">Color: {c.lucky_color}</Badge>
-        <Badge tone="premium">{c.keyword}</Badge>
-        {data.stale && <Badge tone="neutral">lectura reciente</Badge>}
+      <div className="mt-7 flex flex-wrap items-center gap-2.5">
+        <DataPill
+          icon={Hash}
+          label="Nº de la suerte"
+          value={String(c.lucky_number)}
+          accent={accent}
+        />
+        <DataPill
+          icon={Palette}
+          label="Color"
+          value={c.lucky_color}
+          accent={accent}
+        />
+        <DataPill
+          icon={Sparkle}
+          label="Clave"
+          value={c.keyword}
+          accent={accent}
+        />
+        {data.stale && (
+          <span className="rounded-full bg-mist px-3 py-1.5 text-xs font-medium text-silver">
+            lectura reciente
+          </span>
+        )}
       </div>
     </Card>
   );

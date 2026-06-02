@@ -2,7 +2,13 @@ import { forwardRef } from 'react';
 import type { HTMLAttributes } from 'react';
 import { cn } from '@/lib/cn';
 
-export type CardTone = 'default' | 'premium' | 'sign' | 'glass' | 'glow';
+export type CardTone =
+  | 'default'
+  | 'premium'
+  | 'sign'
+  | 'glass'
+  | 'glow'
+  | 'cosmic';
 export type CardPadding = 'none' | 'sm' | 'md' | 'lg';
 
 export interface CardProps extends HTMLAttributes<HTMLDivElement> {
@@ -12,13 +18,17 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const tones: Record<CardTone, string> = {
-  default: 'bg-white border border-slate-200 shadow-soft',
+  default: 'bg-white border border-slate-200/80 shadow-soft',
   premium:
     'bg-white border border-gold-300 shadow-glow-gold relative overflow-hidden',
-  sign: 'bg-white border border-slate-200 overflow-hidden shadow-soft',
+  sign: 'bg-white border border-slate-200/80 overflow-hidden shadow-soft',
   glass:
     'bg-white/70 backdrop-blur-md border border-white/60 shadow-soft relative overflow-hidden',
-  glow: 'bg-white border border-slate-200 shadow-lift',
+  glow: 'bg-white border border-slate-200/80 shadow-lift',
+  /* Card-firma: gradiente cosmico profundo + texto claro. Las paginas
+     pueden sobrescribir el gradiente pasando clases from/via/to tematicas. */
+  cosmic:
+    'bg-gradient-to-br from-indigo-700 via-violet-700 to-indigo-900 text-white border-0 shadow-lift relative overflow-hidden',
 };
 
 const paddings: Record<CardPadding, string> = {
@@ -43,7 +53,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
     <div
       ref={ref}
       className={cn(
-        'rounded-2xl transition-all duration-300 ease-out',
+        'rounded-2xl transition-all duration-300 ease-cosmic',
         tones[tone],
         paddings[padding],
         hoverable && 'hover:-translate-y-1 hover:shadow-lift cursor-pointer',
@@ -75,7 +85,7 @@ export function CardTitle({
 }: HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h3
-      className={cn('font-display text-xl text-ink', className)}
+      className={cn('font-display text-2xl font-semibold leading-tight text-ink', className)}
       {...rest}
     >
       {children}

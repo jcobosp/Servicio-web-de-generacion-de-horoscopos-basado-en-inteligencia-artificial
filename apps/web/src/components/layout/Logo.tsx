@@ -13,7 +13,7 @@ interface LogoProps {
   'aria-label'?: string;
 }
 
-const TEXT_SIZE = { sm: 'text-lg', md: 'text-xl', lg: 'text-2xl' } as const;
+const TEXT_SIZE = { sm: 'text-xl', md: 'text-2xl', lg: 'text-3xl' } as const;
 const MARK_SIZE = { sm: 'h-7 w-7', md: 'h-8 w-8', lg: 'h-10 w-10' } as const;
 const ICON_SIZE = { sm: 'h-3.5 w-3.5', md: 'h-4 w-4', lg: 'h-5 w-5' } as const;
 
@@ -39,7 +39,7 @@ export function Logo({
       </span>
       <span
         className={cn(
-          'font-display font-bold tracking-tight',
+          'font-display font-semibold leading-none tracking-normal',
           TEXT_SIZE[size],
           tone === 'light' ? 'text-white' : 'text-ink',
         )}

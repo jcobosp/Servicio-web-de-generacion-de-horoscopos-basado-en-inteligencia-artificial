@@ -23,10 +23,10 @@ interface HeroProps {
 }
 
 /**
- * Hero reutilizable para la cabecera de cada página: kicker + titular grande +
- * subtítulo + CTAs, con fondo cósmico temático y entrada animada. Por defecto
- * usa una composición asimétrica (texto a la izquierda, arte a la derecha) que
- * aprovecha todo el ancho.
+ * Hero reutilizable para la cabecera de cada página: kicker (chip de color
+ * vivo) + titular display GORDO + subtítulo + CTAs, con fondo cósmico
+ * temático y entrada animada. Composición asimétrica por defecto (texto a la
+ * izquierda, arte a la derecha) que aprovecha todo el ancho.
  */
 export function Hero({
   variant = 'cosmos',
@@ -44,14 +44,14 @@ export function Hero({
   return (
     <Section
       width="wide"
-      className={cn('overflow-hidden pt-12 pb-14 sm:pt-16 sm:pb-20', className)}
+      className={cn('overflow-hidden pt-10 pb-12 sm:pt-14 sm:pb-16', className)}
     >
-      <CosmicBackground variant={variant} intensity="normal" />
+      <CosmicBackground variant={variant} intensity="normal" stars={!centered} />
 
       <div
         className={cn(
           'grid items-center gap-10',
-          art && !centered ? 'lg:grid-cols-[1.15fr_0.85fr]' : 'grid-cols-1',
+          art && !centered ? 'lg:grid-cols-[1.05fr_0.95fr]' : 'grid-cols-1',
         )}
       >
         <Reveal direction="up">
@@ -59,9 +59,8 @@ export function Hero({
             {kicker && (
               <span
                 className={cn(
-                  'inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold',
-                  theme.bgSoft,
-                  theme.text,
+                  'inline-flex items-center gap-2 rounded-full bg-gradient-to-r px-4 py-1.5 text-sm font-bold text-white shadow-lift',
+                  theme.gradient,
                 )}
               >
                 {kicker}
@@ -70,9 +69,9 @@ export function Hero({
 
             <h1
               className={cn(
-                'mt-5 font-display font-bold tracking-tight text-ink',
-                'text-4xl sm:text-5xl lg:text-6xl',
-                'text-balance leading-[1.05]',
+                'mt-6 font-display font-extrabold text-ink',
+                'text-5xl sm:text-6xl lg:text-7xl xl:text-[5.5rem]',
+                'text-balance leading-[0.92] tracking-[-0.035em]',
               )}
             >
               {title}
@@ -81,7 +80,7 @@ export function Hero({
             {subtitle && (
               <p
                 className={cn(
-                  'mt-5 text-lg leading-relaxed text-graphite sm:text-xl',
+                  'mt-6 text-lg leading-relaxed text-graphite sm:text-xl',
                   centered ? 'mx-auto max-w-2xl' : 'max-w-xl',
                 )}
               >

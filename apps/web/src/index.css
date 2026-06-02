@@ -4,16 +4,21 @@
 
 /* ============================================================
    Tailwind v4 theme — Zodiaq
-   Tokens definidos según docs/DESIGN_SYSTEM.md
+   Dirección: «Cósmico-editorial luminoso».
+   Display serif de alto contraste (Cormorant Garamond) sobre fondo
+   crema cálido, con gradientes cósmicos profundos confinados a las
+   cards. Tokens según docs/DESIGN_SYSTEM.md.
    ============================================================ */
 @theme {
-  /* Fuentes — display moderna (Space Grotesk) + texto (Inter) */
-  --font-display: 'Space Grotesk', 'Inter', system-ui, sans-serif;
-  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  /* Fuentes — display moderna y GORDA (Bricolage Grotesque, hasta 800) +
+     cuerpo grotesco legible (Hanken Grotesk). NO usar Inter/Space Grotesk. */
+  --font-display: 'Bricolage Grotesque', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Hanken Grotesk', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
 
   /* Neutros base. `silver` se oscurece respecto al original (#94a3b8) para
-     cumplir contraste AA sobre blanco en texto pequeño (gris claro prohibido). */
+     cumplir contraste AA sobre blanco (gris claro prohibido). El fondo de
+     página es BLANCO; el color vive en las cards. */
   --color-ink: #0f172a;
   --color-graphite: #334155;
   --color-silver: #64748b;
@@ -39,17 +44,18 @@
   --color-aurora-600: #7c3aed;
   --color-aurora-700: #6d28d9;
 
-  /* Premium (oro) */
+  /* Premium (oro). `gold-700` añadido para texto AA sobre claro. */
   --color-gold-300: #fcd34d;
   --color-gold-400: #fbbf24;
   --color-gold-500: #f59e0b;
   --color-gold-600: #d97706;
+  --color-gold-700: #b45309;
   --color-starlight: #fcd34d;
 
   /* ----------------------------------------------------------------
      Colores TEMÁTICOS por funcionalidad. Cada familia trae tonos
      500/600/700 (los 600/700 garantizan contraste AA para texto sobre
-     blanco) y un tono 50/100 para fondos suaves. Ver DESIGN_SYSTEM.
+     claro) y un tono 50/100 para fondos suaves. Ver DESIGN_SYSTEM.
      ---------------------------------------------------------------- */
   /* Tarot — fucsia/magenta místico */
   --color-tarot-50: #fdf4ff;
@@ -98,11 +104,18 @@
   --spacing-22: 5.5rem;
   --spacing-26: 6.5rem;
 
-  /* Sombras y glows */
+  /* Curvas de easing fuertes (Emil Kowalski): las nativas de CSS son
+     demasiado débiles. `ease-cosmic` para entradas/salidas de UI con
+     punch; `ease-cosmic-inout` para movimiento/morph en pantalla. Se
+     exponen como utilidades `ease-cosmic` / `ease-cosmic-inout`. */
+  --ease-cosmic: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-cosmic-inout: cubic-bezier(0.77, 0, 0.175, 1);
+
+  /* Sombras y glows. Suaves y cálidas (editorial). */
   --shadow-glow-cosmos: 0 8px 32px -8px rgba(99, 102, 241, 0.45);
   --shadow-glow-gold: 0 8px 32px -8px rgba(245, 158, 11, 0.45);
-  --shadow-soft: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px -12px rgba(15, 23, 42, 0.12);
-  --shadow-lift: 0 12px 40px -12px rgba(15, 23, 42, 0.22);
+  --shadow-soft: 0 1px 2px rgba(15, 23, 42, 0.04), 0 10px 30px -16px rgba(15, 23, 42, 0.16);
+  --shadow-lift: 0 18px 50px -16px rgba(15, 23, 42, 0.26);
 
   /* Animaciones reutilizables como utilidades `animate-*` de Tailwind v4 */
   --animate-float: float 6s ease-in-out infinite;
@@ -112,6 +125,13 @@
   --animate-shimmer: shimmer 2.2s linear infinite;
   --animate-pulse-glow: pulse-glow 3s ease-in-out infinite;
   --animate-spin-slow: spin 18s linear infinite;
+  --animate-drift: drift 18s ease-in-out infinite;
+  /* Movimiento llamativo: gradiente que viaja y texto que brilla. */
+  --animate-gradient-fast: gradient-pan 5s ease infinite;
+  --animate-glow: glow 2.8s ease-in-out infinite;
+  --animate-glow-gold: glow-gold 2.8s ease-in-out infinite;
+  --animate-orbit: orbit-spin 14s linear infinite;
+  --animate-shooting: shooting 7s ease-in infinite;
 }
 
 /* Reset y base */
@@ -124,17 +144,20 @@
 
   body {
     @apply bg-white font-sans text-[color:var(--color-ink)] antialiased;
-    font-feature-settings:
-      'ss01' on,
-      'cv11' on;
   }
 
+  /* Titulares en Bricolage Grotesque: modernos y GORDOS. Tracking ceñido y
+     `line-height` apretado para que los tamaños grandes peguen fuerte. El
+     peso lo fija cada componente (los display grandes van en 700-800).
+     NO se fija color: los encabezados HEREDAN el color del contexto, así
+     salen oscuros sobre blanco y blancos dentro de las cards de color. */
   h1,
   h2,
   h3,
   h4 {
-    @apply font-display text-[color:var(--color-ink)];
-    letter-spacing: -0.01em;
+    @apply font-display font-bold;
+    letter-spacing: -0.03em;
+    line-height: 1.0;
   }
 
   :focus-visible {
@@ -174,7 +197,24 @@
 
   /* Para animar gradientes (necesita tamaño mayor que el contenedor) */
   .bg-animated {
-    background-size: 200% 200%;
+    background-size: 220% 220%;
+  }
+
+  /* Texto que BRILLA: halo cósmico alrededor de las letras (sobre fondo
+     claro). `text-glow` fijo; `text-glow-soft` más tenue para subtítulos. */
+  .text-glow {
+    text-shadow:
+      0 0 28px rgba(99, 102, 241, 0.5),
+      0 0 10px rgba(217, 70, 239, 0.4);
+  }
+  .text-glow-soft {
+    text-shadow: 0 0 22px rgba(99, 102, 241, 0.35);
+  }
+  /* Brillo DORADO para palabras destacadas sobre fondos de color/oscuros. */
+  .text-glow-gold {
+    text-shadow:
+      0 0 24px rgba(252, 211, 77, 0.8),
+      0 0 9px rgba(245, 158, 11, 0.65);
   }
 }
 
@@ -214,8 +254,8 @@
 @keyframes twinkle {
   0%,
   100% {
-    opacity: 0.25;
-    transform: scale(0.85);
+    opacity: 0.2;
+    transform: scale(0.8);
   }
   50% {
     opacity: 1;
@@ -253,6 +293,79 @@
   50% {
     opacity: 0.85;
     transform: scale(1.06);
+  }
+}
+
+/* Deriva lenta de blobs/auras dentro de las cards cósmicas. */
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(6%, -8%, 0) scale(1.08);
+  }
+  66% {
+    transform: translate3d(-5%, 5%, 0) scale(0.96);
+  }
+}
+
+/* Texto que palpita de brillo (animate-glow). */
+@keyframes glow {
+  0%,
+  100% {
+    text-shadow:
+      0 0 18px rgba(99, 102, 241, 0.35),
+      0 0 6px rgba(217, 70, 239, 0.25);
+  }
+  50% {
+    text-shadow:
+      0 0 38px rgba(99, 102, 241, 0.65),
+      0 0 16px rgba(217, 70, 239, 0.55);
+  }
+}
+
+/* Texto que palpita de brillo DORADO (animate-glow-gold). */
+@keyframes glow-gold {
+  0%,
+  100% {
+    text-shadow:
+      0 0 16px rgba(252, 211, 77, 0.55),
+      0 0 6px rgba(245, 158, 11, 0.4);
+  }
+  50% {
+    text-shadow:
+      0 0 34px rgba(252, 211, 77, 0.95),
+      0 0 14px rgba(245, 158, 11, 0.7);
+  }
+}
+
+/* Órbita: gira un contenedor para puntos/lunas orbitando (animate-orbit). */
+@keyframes orbit-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Estrella fugaz: cruza en diagonal y se desvanece (animate-shooting). */
+@keyframes shooting {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0);
+  }
+  6% {
+    opacity: 1;
+  }
+  26% {
+    opacity: 0;
+    transform: translate3d(320px, 180px, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(320px, 180px, 0);
   }
 }
 

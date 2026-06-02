@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Informes de auditoría Lighthouse (artefactos para capturas, no código)
+lighthouse-*.html
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

@@ -46,6 +46,30 @@ export type Database = {
         }
         Relationships: []
       }
+      simple_tarot_credits: {
+        Row: {
+          consumed_at: string | null
+          created_at: string
+          id: string
+          stripe_session_id: string | null
+          user_id: string
+        }
+        Insert: {
+          consumed_at?: string | null
+          created_at?: string
+          id?: string
+          stripe_session_id?: string | null
+          user_id: string
+        }
+        Update: {
+          consumed_at?: string | null
+          created_at?: string
+          id?: string
+          stripe_session_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       astro_events: {
         Row: {
           created_at: string

@@ -123,15 +123,17 @@ export function Footer() {
 
       <div className="relative mx-auto max-w-7xl px-4 pt-16 sm:px-6 lg:px-8">
         <div className="relative">
-          {/* Wordmark gigante de fondo, centrado tras las columnas */}
+          {/* Wordmark gigante de fondo, centrado tras las columnas. Sin
+              overflow-hidden y con line-height holgado + padding inferior para
+              que el rabo de la «q» se vea entero (antes lo cortaba el clip). */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden"
+            className="pointer-events-none absolute inset-0 flex items-center justify-center"
           >
             <span
               className={cn(
-                'block select-none bg-gradient-to-b from-white/20 to-white/[0.04] bg-clip-text text-transparent',
-                'font-display font-bold leading-[0.8] tracking-tighter',
+                'block select-none bg-gradient-to-b from-white/20 to-white/[0.04] bg-clip-text pb-[0.18em] text-transparent',
+                'font-display font-extrabold leading-[1.15] tracking-tighter',
                 'text-[24vw] md:text-[18vw]',
               )}
             >

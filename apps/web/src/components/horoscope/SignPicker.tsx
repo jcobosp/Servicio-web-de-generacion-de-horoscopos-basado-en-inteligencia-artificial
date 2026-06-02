@@ -12,13 +12,17 @@ interface SignPickerProps {
 export function SignPicker({ hrefFor, title }: SignPickerProps) {
   return (
     <section aria-label="Elegir signo">
-      {title && <h2 className="mb-4 font-display text-xl text-ink">{title}</h2>}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+      {title && (
+        <h2 className="mb-5 font-display text-2xl font-extrabold tracking-tight text-ink sm:text-3xl">
+          {title}
+        </h2>
+      )}
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
         {ZODIAC_SIGNS.map((slug) => (
           <SignCard
             key={slug}
             sign={ZODIAC[slug]}
-            size="sm"
+            size="lg"
             to={hrefFor(slug)}
           />
         ))}

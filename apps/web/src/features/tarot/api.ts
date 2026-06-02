@@ -43,6 +43,24 @@ export interface StoredReading {
   created_at: string;
 }
 
+function rowToStored(row: {
+  id: string;
+  spread_type: string;
+  cards: unknown;
+  interpretation: string;
+  question: string | null;
+  created_at: string;
+}): StoredReading {
+  return {
+    id: row.id,
+    spread_type: row.spread_type as SpreadType,
+    cards: (row.cards as unknown as TarotCard[]) ?? [],
+    summary: row.interpretation,
+    question: row.question,
+    created_at: row.created_at,
+  };
+}
+
 /** Última tirada gratuita del usuario (para mostrarla y calcular el cooldown). */
 export async function fetchLastReading(
   userId: string,
@@ -57,12 +75,42 @@ export async function fetchLastReading(
     .maybeSingle();
   if (error) throw error;
   if (!data) return null;
-  return {
-    id: data.id,
-    spread_type: data.spread_type as SpreadType,
-    cards: (data.cards as unknown as TarotCard[]) ?? [],
-    summary: data.interpretation,
-    question: data.question,
-    created_at: data.created_at,
-  };
+  return rowToStored(data);
+}
+
+/** Historial de tiradas simples del usuario (las más recientes primero). */
+export async function fetchTarotHistory(
+  userId: string,
+): Promise<StoredReading[]> {
+  const { data, error } = await supabase
+    .from('tarot_readings')
+    .select('id, spread_type, cards, interpretation, question, created_at')
+    .eq('user_id', userId)
+    .eq('is_premium_spread', false)
+    .order('created_at', { ascending: false })
+    .limit(30);
+  if (error) throw error;
+  return (data ?? []).map(rowToStored);
+}
+
+/** Nº de créditos de tirada extra disponibles (sin consumir). */
+export async function fetchTarotCredits(userId: string): Promise<number> {
+  const { count, error } = await supabase
+    .from('simple_tarot_credits')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', userId)
+    .is('consumed_at', null);
+  if (error) throw error;
+  return count ?? 0;
+}
+
+/** Inicia el pago puntual (1,99 €) de una tirada extra y devuelve la URL. */
+export async function createSimpleTarotPayment(): Promise<string> {
+  const { data, error } = await supabase.functions.invoke<{ url?: string; error?: string }>(
+    'create-simple-tarot-payment',
+    { body: {} },
+  );
+  if (error) throw error;
+  if (!data?.url) throw new Error(data?.error ?? 'No se pudo iniciar el pago');
+  return data.url;
 }

@@ -8,6 +8,8 @@ import { updatePassword, authErrorMessage } from '@/features/auth/api';
 import { AuthShell } from '@/features/auth/AuthShell';
 import { supabase } from '@/lib/supabase';
 import { toast } from '@/components/ui/Toast';
+import { Shine } from '@/components/visual/Shine';
+import { KeyRound, Lock, Sparkles } from 'lucide-react';
 
 export function ResetPasswordPage() {
   const navigate = useNavigate();
@@ -56,6 +58,19 @@ export function ResetPasswordPage() {
       title="Nueva contraseña"
       metaTitle="Restablecer contraseña · Zodiaq"
       subtitle="Elige una contraseña nueva para tu cuenta."
+      variant="astral"
+      pitch={
+        <>
+          Un paso y
+          <br />
+          <Shine gold>todo tuyo</Shine> de nuevo.
+        </>
+      }
+      highlights={[
+        { icon: Lock, text: 'Elige una contraseña fuerte y fácil de recordar' },
+        { icon: KeyRound, text: 'El cambio se aplica al instante' },
+        { icon: Sparkles, text: 'Y vuelves directo a tus lecturas' },
+      ]}
     >
       {hasRecoverySession === false ? (
         <p className="text-sm text-graphite">
