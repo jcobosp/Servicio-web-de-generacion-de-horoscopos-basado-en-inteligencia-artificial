@@ -34,12 +34,32 @@ tfm/
 
 ## Arrancar en local
 
+No necesitas configurar nada: el repo incluye un `.env` con las **claves públicas**
+del cliente y arranca contra el backend de demostración (Supabase + IA + Stripe en
+modo prueba).
+
 ```bash
 cd apps/web
-cp .env.example .env.local   # rellenar con los valores reales (ver docs/INTEGRATIONS.md)
 npm install
-npm run dev                  # http://localhost:5173
+npm run dev          # http://localhost:5173
 ```
+
+Para probar el plan **premium**, el checkout de Stripe está en **modo prueba**: usa la
+tarjeta de test `4242 4242 4242 4242`, cualquier fecha futura y cualquier CVC. No se
+realiza ningún cargo real.
+
+> **¿Por qué es seguro que el repo traiga esas claves?**
+> Las variables `VITE_*` son **públicas por diseño** (la `anon key` de Supabase y la
+> `publishable key` de Stripe): son las mismas que viajan en el JavaScript de cualquier
+> web desplegada. Lo que protege la plataforma **no** es ocultarlas, sino:
+> - **RLS** (Row Level Security) en todas las tablas de Supabase.
+> - Un **límite diario de generaciones de IA** en las Edge Functions, que acota el coste.
+> - Los **secretos reales** (API key de Gemini, `service_role` de Supabase y `secret key`
+>   de Stripe) viven **solo** en *Supabase → Edge Functions → Secrets*, nunca en el
+>   repositorio ni en el navegador.
+>
+> Si quieres apuntar a tu propio backend, crea un `apps/web/.env.local` (ignorado por
+> git) con tus valores; tienen prioridad sobre el `.env` versionado.
 
 ### Scripts disponibles (apps/web)
 

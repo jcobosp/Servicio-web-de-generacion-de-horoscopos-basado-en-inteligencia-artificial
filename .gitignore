@@ -11,8 +11,13 @@ out/
 *.tsbuildinfo
 
 # Environment
-.env
-.env.*
+# `.env` SÍ se versiona: contiene solo claves PÚBLICAS del cliente (convención Vite),
+# las mismas que viajan en el bundle de la web. Permite clonar y arrancar sin configurar nada.
+# Los SECRETOS del servidor (Gemini, service_role, Stripe secret) viven en
+# Supabase → Edge Functions → Secrets, nunca aquí. Las sobreescrituras locales
+# con datos sensibles van en `.env.local`, que sí se ignora.
+.env.local
+.env.*.local
 !.env.example
 
 # Editor / OS
