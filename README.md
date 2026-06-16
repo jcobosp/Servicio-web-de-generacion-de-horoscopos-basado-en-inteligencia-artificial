@@ -26,15 +26,21 @@ Trabajo Fin de Máster · Máster Universitario en Ingeniería de Telecomunicaci
 
 <div align="center">
 
-<video src="https://github.com/jcobosp/Servicio-web-de-generacion-de-horoscopos-basado-en-inteligencia-artificial/releases/download/v1.0/zodiaq-demo.mp4" controls muted width="800">
-  Tu navegador no puede reproducir el vídeo incrustado.
-</video>
+<a href="https://drive.google.com/file/d/1FUvC5qaLS3HghYQKUGvNbctKX4sPMKxT/view?usp=sharing" title="Ver el vídeo demostración de Zodiaq">
+  <img src="https://drive.google.com/thumbnail?id=1FUvC5qaLS3HghYQKUGvNbctKX4sPMKxT&sz=w900" alt="Vídeo demostración de Zodiaq" width="800">
+</a>
+
+<br/><br/>
+
+<a href="https://drive.google.com/file/d/1FUvC5qaLS3HghYQKUGvNbctKX4sPMKxT/view?usp=sharing">
+  <img src="https://img.shields.io/badge/%E2%96%B6%20Ver%20el%20v%C3%ADdeo%20completo-Google%20Drive-4285F4?style=for-the-badge&logo=googledrive&logoColor=white" alt="Ver el vídeo en Google Drive">
+</a>
 
 <br/>
 
-▶️ *Pulsa el botón de reproducción. Usa el icono de pantalla completa del reproductor para verlo a tamaño completo.*
+▶️ *Pulsa la portada o el botón para abrir el vídeo en Google Drive, donde podrás reproducirlo a pantalla completa.*
 
-<sub>¿No carga el reproductor? Abre o descarga el vídeo directamente aquí: <a href="https://github.com/jcobosp/Servicio-web-de-generacion-de-horoscopos-basado-en-inteligencia-artificial/releases/download/v1.0/zodiaq-demo.mp4">zodiaq-demo.mp4</a></sub>
+<sub>¿No se abre? Mira o descarga el vídeo directamente en Google Drive aquí: <a href="https://drive.google.com/file/d/1FUvC5qaLS3HghYQKUGvNbctKX4sPMKxT/view?usp=sharing">zodiaq-demo.mp4</a></sub>
 
 </div>
 
