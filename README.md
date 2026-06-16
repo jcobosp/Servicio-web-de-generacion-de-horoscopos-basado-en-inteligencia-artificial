@@ -215,9 +215,9 @@ npm run dev
 
 A continuación, abrir **http://localhost:5173** en el navegador.
 
-### Usuario de demostración (recomendado)
+### Usuario de demostración
 
-La plataforma se entrega en **modo demostración**. Para que cualquiera pueda probarla con comodidad —y para no generar coste en el servicio de IA— las funcionalidades de inteligencia artificial **no se generan en vivo**: devuelven **resultados de ejemplo precargados y deterministas**. De este modo, todo el mundo ve el mismo contenido y la aplicación **no realiza ninguna llamada a Google Gemini**.
+La plataforma se entrega en **modo demostración**. Para que cualquiera pueda probarla con comodidad, y para no generar coste en el servicio de IA, las funcionalidades de inteligencia artificial **no se generan en vivo**: devuelven **resultados de ejemplo precargados y deterministas**. De este modo, todo el mundo ve el mismo contenido y la aplicación **no realiza ninguna llamada a Google Gemini**.
 
 Para recorrer **todas** las funcionalidades, incluidas las premium, inicia sesión con el usuario de demostración, que ya tiene una **suscripción premium activa**:
 

@@ -22,8 +22,33 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
 // MODO DEMOSTRACIÓN: interceptamos la invocación de Edge Functions para que la
 // app nunca llame a la IA (Gemini) y sirva resultados de ejemplo precargados.
 // Ver `lib/demo.ts`. No afecta a la autenticación ni a la lectura de tablas.
+//
+// Nota: en supabase-js, `client.functions` es un GETTER que crea un
+// `FunctionsClient` NUEVO en cada acceso (para inyectar el token de sesión
+// vigente). Por eso no basta con reasignar `supabase.functions.invoke`: hay que
+// sustituir el propio getter para envolver `invoke` en cada cliente devuelto.
 if (isDemoMode) {
-  const realInvoke = supabase.functions.invoke.bind(supabase.functions);
-  supabase.functions.invoke = ((name: string, options?: { body?: unknown }) =>
-    demoInvoke(name, options, realInvoke as never)) as typeof supabase.functions.invoke;
+  let originalGetter: (() => unknown) | undefined;
+  for (let o: object | null = supabase; o; o = Object.getPrototypeOf(o)) {
+    const desc = Object.getOwnPropertyDescriptor(o, 'functions');
+    if (desc?.get) {
+      originalGetter = desc.get;
+      break;
+    }
+  }
+
+  if (originalGetter) {
+    Object.defineProperty(supabase, 'functions', {
+      configurable: true,
+      get() {
+        const client = originalGetter!.call(this) as {
+          invoke: (name: string, options?: { body?: unknown }) => Promise<unknown>;
+        };
+        const realInvoke = client.invoke.bind(client);
+        client.invoke = ((name: string, options?: { body?: unknown }) =>
+          demoInvoke(name, options, realInvoke as never)) as typeof client.invoke;
+        return client;
+      },
+    });
+  }
 }
