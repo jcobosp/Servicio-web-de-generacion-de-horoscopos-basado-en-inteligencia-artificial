@@ -215,14 +215,30 @@ npm run dev
 
 A continuación, abrir **http://localhost:5173** en el navegador.
 
+### Usuario de demostración (recomendado)
+
+La plataforma se entrega en **modo demostración**. Para que cualquiera pueda probarla con comodidad —y para no generar coste en el servicio de IA— las funcionalidades de inteligencia artificial **no se generan en vivo**: devuelven **resultados de ejemplo precargados y deterministas**. De este modo, todo el mundo ve el mismo contenido y la aplicación **no realiza ninguna llamada a Google Gemini**.
+
+Para recorrer **todas** las funcionalidades, incluidas las premium, inicia sesión con el usuario de demostración, que ya tiene una **suscripción premium activa**:
+
+| | |
+|---|---|
+| 📧 **Correo** | `demo@zodiaq.app` |
+| 🔑 **Contraseña** | `ZodiaqDemo2026` |
+
+Con esta cuenta podrás ver al instante el resultado de la carta natal completa, la compatibilidad avanzada, los reportes mensual y anual, el tarot avanzado y la numerología avanzada, además de todas las funcionalidades gratuitas.
+
+> **¿Por qué un modo demostración?** El motor de IA (Google Gemini) está asociado a una cuenta con coste por uso. Para que las pruebas públicas no generen ningún gasto, la aplicación no invoca la IA real, sino que sirve resultados de ejemplo. Quien quiera activar la generación real solo tiene que establecer `VITE_DEMO_MODE=false` en un archivo `apps/web/.env.local` y configurar su propia clave `GEMINI_API_KEY` en las Edge Functions de Supabase.
+
 ### Cómo probar cada parte
 
 | Qué probar | Cómo |
 |---|---|
-| **Funcionalidades gratuitas** | Navegar sin registrarse (horóscopos, compatibilidad por signos, numerología, eventos astrológicos). |
-| **Cuenta de usuario** | Registrarse con un correo electrónico. El signo se calcula automáticamente a partir de la fecha de nacimiento. |
+| **Funcionalidades gratuitas** | Navegar sin registrarse (horóscopos, compatibilidad por signos, numerología, eventos astrológicos). Muestran resultados de ejemplo. |
+| **Usuario de demostración** | Iniciar sesión con `demo@zodiaq.app` / `ZodiaqDemo2026`. Incluye premium activo y acceso a todo. |
 | **Funcionalidades por usuario** | Tarot simple y carta natal básica (requieren sesión iniciada). |
-| **Plan premium** | En `/premium` se inicia el proceso de pago. Stripe opera en modo prueba: usar la tarjeta `4242 4242 4242 4242`, cualquier fecha futura y cualquier CVC. No se realiza ningún cargo real. |
+| **Funcionalidades premium** | Con el usuario de demostración: carta natal completa, compatibilidad avanzada, reportes, tarot avanzado y numerología avanzada. |
+| **Registrar tu propia cuenta** | También puedes registrarte con tu correo; el signo se calcula automáticamente a partir de la fecha de nacimiento. Los pagos y la gestión de cuenta están deshabilitados en el modo demostración. |
 
 ---
 
@@ -232,9 +248,9 @@ El archivo `apps/web/.env` está versionado de forma deliberada para que cualqui
 
 * Las variables con prefijo `VITE_` son **públicas**: Vite las incrusta en el JavaScript que se sirve al navegador, por lo que ya son visibles en las herramientas de desarrollo de cualquier web desplegada. Ocultarlas en el repositorio no aportaría ninguna protección.
 * La *anon key* de Supabase y la *publishable key* de Stripe están diseñadas para ser públicas.
-* Lo que realmente protege la plataforma no es ocultar esas claves, sino tres mecanismos:
+* Lo que realmente protege la plataforma no es ocultar esas claves, sino varios mecanismos:
   * **Row Level Security (RLS)** activado en todas las tablas con datos de usuario.
-  * Un **límite diario de generaciones de IA** en las Edge Functions, que acota el coste.
+  * El **modo demostración** (`VITE_DEMO_MODE=true`): la aplicación no llama a la IA y sirve resultados de ejemplo, de modo que las pruebas públicas **no generan coste**. Como protección adicional a nivel de servidor, el backend de demostración **no tiene configurada la clave `GEMINI_API_KEY`**, por lo que ninguna petición —ni siquiera directa a las Edge Functions— puede consumir generaciones de pago.
   * Los **secretos reales** (la *API key* de Gemini, la *service role* de Supabase y la *secret key* y el *webhook secret* de Stripe) residen exclusivamente en los *secrets* de las Edge Functions de Supabase. Nunca están en el repositorio ni llegan al navegador.
 
 Para orientar la aplicación hacia un backend propio, basta con crear un archivo `apps/web/.env.local` (ignorado por git) con valores personalizados; estos tienen prioridad sobre el `.env` versionado. La plantilla está disponible en `apps/web/.env.example`.
