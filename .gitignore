@@ -54,3 +54,6 @@ supabase/.temp/
 .eslintcache
 .cache/
 
+# Vídeo de demostración (se sube como asset de un Release de GitHub, no al repo: pesa >100 MB)
+*.mp4
+
