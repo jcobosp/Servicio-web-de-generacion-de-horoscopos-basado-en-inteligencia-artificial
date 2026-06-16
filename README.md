@@ -60,9 +60,8 @@ Trabajo Fin de Máster · Máster Universitario en Ingeniería de Telecomunicaci
 10. [Base de datos y backend](#base-de-datos-y-backend)
 11. [Cumplimiento legal y privacidad](#cumplimiento-legal-y-privacidad)
 12. [Calidad, pruebas y rendimiento](#calidad-pruebas-y-rendimiento)
-13. [Documentación del proyecto](#documentación-del-proyecto)
-14. [Próximos pasos](#próximos-pasos-fuera-del-alcance-del-tfm)
-15. [Licencia y autoría](#licencia-y-autoría)
+13. [Próximos pasos](#próximos-pasos-fuera-del-alcance-del-tfm)
+14. [Licencia y autoría](#licencia-y-autoría)
 
 ---
 
@@ -182,14 +181,10 @@ tfm/
 │       ├── package.json
 │       ├── vite.config.ts        Build y plugin de sitemap/robots
 │       └── tailwind.config / tsconfig
-├── supabase/
-│   ├── migrations/               21 migraciones SQL versionadas (tablas, RLS, crons)
-│   ├── functions/                18 Edge Functions (Deno)
-│   └── seed/                     Generadores de datos semilla
-└── docs/                         Documentación técnica del proyecto
-    ├── ROADMAP.md, ARCHITECTURE.md, DATABASE_SCHEMA.md, DESIGN_SYSTEM.md
-    ├── CONTENT_STRATEGY.md, MARKETING_STRATEGY.md, SEO_STRATEGY.md
-    └── SECURITY.md, LEGAL_COMPLIANCE.md, INTEGRATIONS.md
+└── supabase/
+    ├── migrations/               21 migraciones SQL versionadas (tablas, RLS, crons)
+    ├── functions/                18 Edge Functions (Deno)
+    └── seed/                     Generadores de datos semilla
 ```
 
 ---
@@ -330,7 +325,7 @@ Todos se ejecutan dentro de `apps/web`:
 
 ## Cumplimiento legal y privacidad
 
-* Cumplimiento del **RGPD, la LOPDGDD, la LSSI-CE y la normativa de cookies** del mercado español. El detalle se encuentra en `docs/LEGAL_COMPLIANCE.md`.
+* Cumplimiento del **RGPD, la LOPDGDD, la LSSI-CE y la normativa de cookies** del mercado español.
 * **Minimización de datos personales**: en el registro solo se solicitan correo electrónico, contraseña, nombre y fecha de nacimiento (necesaria para calcular el signo). La hora y el lugar de nacimiento son opcionales y se almacenan cifrados.
 * **Contraseñas gestionadas por Supabase Auth** (bcrypt). Los datos se cifran en reposo (AES-256) y en tránsito (HTTPS).
 * **Modelo de cookies de tipo «consentir o suscribirse»** (guía de la AEPD de mayo de 2024): el uso gratuito requiere aceptar las cookies publicitarias, mientras que la alternativa sin anuncios es el plan Premium.
@@ -351,25 +346,6 @@ Todos se ejecutan dentro de `apps/web`:
 
 * **SEO desde el primer día**: metadatos por página, etiqueta *canonical*, Open Graph y Twitter Cards, datos estructurados Schema.org (JSON-LD) y generación de *sitemap* y `robots.txt` durante el *build* (63 URL), con URL limpias.
 * **Rendimiento**: *code splitting* por dependencias y rutas con carga diferida, *prefetch* de la navegación, carga asíncrona de fuentes y respeto de la preferencia `prefers-reduced-motion`.
-
----
-
-## Documentación del proyecto
-
-La planificación y el diseño detallado del proyecto residen en el directorio `docs/`:
-
-| Documento | Contenido |
-|---|---|
-| [`ROADMAP.md`](docs/ROADMAP.md) | Plan de fases y seguimiento del avance |
-| [`ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Arquitectura técnica y organización de carpetas |
-| [`DATABASE_SCHEMA.md`](docs/DATABASE_SCHEMA.md) | Tablas, relaciones, RLS e índices |
-| [`DESIGN_SYSTEM.md`](docs/DESIGN_SYSTEM.md) | Sistema de diseño visual y temas por funcionalidad |
-| [`CONTENT_STRATEGY.md`](docs/CONTENT_STRATEGY.md) | Prompts de Gemini, psicología y longitudes del contenido |
-| [`MARKETING_STRATEGY.md`](docs/MARKETING_STRATEGY.md) | Embudo de conversión de gratuito a premium |
-| [`SEO_STRATEGY.md`](docs/SEO_STRATEGY.md) | Palabras clave, metadatos, *sitemap* y Schema.org |
-| [`SECURITY.md`](docs/SECURITY.md) | Ciberseguridad, gestión de secretos y OWASP |
-| [`LEGAL_COMPLIANCE.md`](docs/LEGAL_COMPLIANCE.md) | RGPD, LSSI, cookies y textos legales |
-| [`INTEGRATIONS.md`](docs/INTEGRATIONS.md) | Conexión paso a paso con Supabase, Stripe, Gemini y AdSense |
 
 ---
 

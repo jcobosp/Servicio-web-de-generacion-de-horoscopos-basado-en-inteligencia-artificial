@@ -57,3 +57,7 @@ supabase/.temp/
 # Vídeo de demostración (se sube como asset de un Release de GitHub, no al repo: pesa >100 MB)
 *.mp4
 
+# Documentación y planificación interna del TFM (se conserva en local, fuera del repo público)
+docs/
+memoria/
+
