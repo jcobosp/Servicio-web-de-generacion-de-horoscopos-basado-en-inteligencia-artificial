@@ -24,11 +24,19 @@ Trabajo Fin de Máster · Máster Universitario en Ingeniería de Telecomunicaci
 
 > Recorrido completo en vídeo por **Zodiaq**, probando en directo **todas las funcionalidades** de la plataforma: registro y cálculo automático del signo, horóscopos diario/semanal/mensual, energía del día, eventos astrológicos, carta natal, tarot, compatibilidad y numerología, el plan premium con Stripe, el modelo de cookies y la experiencia sin anuncios.
 
-https://github.com/jcobosp/Servicio-web-de-generacion-de-horoscopos-basado-en-inteligencia-artificial/releases/download/v1.0/zodiaq-demo.mp4
+<div align="center">
 
-▶️ *Pulsa sobre el vídeo para reproducirlo. Usa el icono de pantalla completa del reproductor para verlo a tamaño completo.*
+<video src="https://github.com/jcobosp/Servicio-web-de-generacion-de-horoscopos-basado-en-inteligencia-artificial/releases/download/v1.0/zodiaq-demo.mp4" controls muted width="800">
+  Tu navegador no puede reproducir el vídeo incrustado.
+</video>
+
+<br/>
+
+▶️ *Pulsa el botón de reproducción. Usa el icono de pantalla completa del reproductor para verlo a tamaño completo.*
 
 <sub>¿No carga el reproductor? Abre o descarga el vídeo directamente aquí: <a href="https://github.com/jcobosp/Servicio-web-de-generacion-de-horoscopos-basado-en-inteligencia-artificial/releases/download/v1.0/zodiaq-demo.mp4">zodiaq-demo.mp4</a></sub>
+
+</div>
 
 ---
 
