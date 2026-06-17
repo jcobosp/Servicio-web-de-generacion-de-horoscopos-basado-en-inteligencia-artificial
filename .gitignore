@@ -45,6 +45,12 @@ test-results/
 # Supabase
 supabase/.branches/
 supabase/.temp/
+# Lógica propia del backend que NO se publica (la "receta": prompts de IA,
+# generadores deterministas de contenido). Se conserva en local y desplegada
+# en Supabase, fuera del repo público. Las migraciones (esquema + RLS) SÍ se
+# versionan como muestra de la arquitectura.
+supabase/functions/
+supabase/seed/
 
 # Deployment
 .vercel/
