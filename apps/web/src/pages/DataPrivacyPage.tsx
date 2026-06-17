@@ -11,6 +11,7 @@ import { Reveal } from '@/components/motion/Reveal';
 import { toast } from '@/components/ui/Toast';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { collectMyData, downloadJson, deleteMyAccount } from '@/features/privacy/api';
+import { isDemoUser } from '@/lib/demo';
 
 export function DataPrivacyPage() {
   const navigate = useNavigate();
@@ -19,6 +20,10 @@ export function DataPrivacyPage() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmText, setConfirmText] = useState('');
   const [deleting, setDeleting] = useState(false);
+
+  // El usuario de demostración es compartido: ocultamos el borrado de cuenta
+  // para que nadie pueda eliminarlo y dejar al resto sin usuario de prueba.
+  const canDeleteAccount = !isDemoUser(user?.email);
 
   async function onExport() {
     if (!user) return;
@@ -70,8 +75,9 @@ export function DataPrivacyPage() {
               Mis datos
             </h1>
             <p className="mt-3 max-w-xl text-white/85">
-              Tú mandas sobre tu información. Exporta una copia o elimina tu cuenta
-              cuando quieras.
+              {canDeleteAccount
+                ? 'Tú mandas sobre tu información. Exporta una copia o elimina tu cuenta cuando quieras.'
+                : 'Tú mandas sobre tu información. Exporta una copia de tus datos cuando quieras.'}
             </p>
           </div>
         </div>
@@ -102,62 +108,66 @@ export function DataPrivacyPage() {
             </Card>
           </Reveal>
 
-          <Reveal>
-            <Card padding="lg" className="relative overflow-hidden border-2 border-red-200 sm:p-8">
-              <span aria-hidden="true" className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-red-200/40 blur-3xl" />
-              <div className="relative flex flex-col gap-5 sm:flex-row sm:items-start">
-                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-red-500 to-rose-700 text-white shadow-soft">
-                  <Trash2 className="h-7 w-7" aria-hidden="true" />
-                </span>
-                <div className="flex-1">
-                  <p className="font-display text-2xl font-extrabold tracking-tight text-ink">Eliminar mi cuenta</p>
-                  <p className="mt-2 text-base leading-relaxed text-graphite">
-                    Esta acción es permanente. Se borrarán tu perfil, lecturas y todos tus
-                    datos. No se puede deshacer.
-                  </p>
-                  <div className="mt-5">
-                    <Button variant="danger" onClick={() => setConfirmOpen(true)} leftIcon={<Trash2 className="h-5 w-5" />}>
-                      Eliminar mi cuenta
-                    </Button>
+          {canDeleteAccount && (
+            <Reveal>
+              <Card padding="lg" className="relative overflow-hidden border-2 border-red-200 sm:p-8">
+                <span aria-hidden="true" className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-red-200/40 blur-3xl" />
+                <div className="relative flex flex-col gap-5 sm:flex-row sm:items-start">
+                  <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-red-500 to-rose-700 text-white shadow-soft">
+                    <Trash2 className="h-7 w-7" aria-hidden="true" />
+                  </span>
+                  <div className="flex-1">
+                    <p className="font-display text-2xl font-extrabold tracking-tight text-ink">Eliminar mi cuenta</p>
+                    <p className="mt-2 text-base leading-relaxed text-graphite">
+                      Esta acción es permanente. Se borrarán tu perfil, lecturas y todos tus
+                      datos. No se puede deshacer.
+                    </p>
+                    <div className="mt-5">
+                      <Button variant="danger" onClick={() => setConfirmOpen(true)} leftIcon={<Trash2 className="h-5 w-5" />}>
+                        Eliminar mi cuenta
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Card>
-          </Reveal>
+              </Card>
+            </Reveal>
+          )}
         </div>
       </Section>
 
-      <Modal
-        open={confirmOpen}
-        onClose={() => setConfirmOpen(false)}
-        title="Eliminar cuenta permanentemente"
-        footer={
-          <>
-            <Button variant="ghost" onClick={() => setConfirmOpen(false)}>
-              Cancelar
-            </Button>
-            <Button variant="danger" disabled={confirmText !== 'ELIMINAR' || deleting} onClick={onDelete}>
-              {deleting ? 'Eliminando...' : 'Eliminar definitivamente'}
-            </Button>
-          </>
-        }
-      >
-        <div className="flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4">
-          <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-red-600" aria-hidden="true" />
-          <p className="text-sm text-graphite">
-            Para confirmar, escribe <strong>ELIMINAR</strong> en el campo. Esta acción
-            borrará tu cuenta y todos tus datos de forma irreversible.
-          </p>
-        </div>
-        <div className="mt-4">
-          <Input
-            value={confirmText}
-            onChange={(e) => setConfirmText(e.target.value)}
-            placeholder="ELIMINAR"
-            aria-label="Escribe ELIMINAR para confirmar"
-          />
-        </div>
-      </Modal>
+      {canDeleteAccount && (
+        <Modal
+          open={confirmOpen}
+          onClose={() => setConfirmOpen(false)}
+          title="Eliminar cuenta permanentemente"
+          footer={
+            <>
+              <Button variant="ghost" onClick={() => setConfirmOpen(false)}>
+                Cancelar
+              </Button>
+              <Button variant="danger" disabled={confirmText !== 'ELIMINAR' || deleting} onClick={onDelete}>
+                {deleting ? 'Eliminando...' : 'Eliminar definitivamente'}
+              </Button>
+            </>
+          }
+        >
+          <div className="flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4">
+            <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-red-600" aria-hidden="true" />
+            <p className="text-sm text-graphite">
+              Para confirmar, escribe <strong>ELIMINAR</strong> en el campo. Esta acción
+              borrará tu cuenta y todos tus datos de forma irreversible.
+            </p>
+          </div>
+          <div className="mt-4">
+            <Input
+              value={confirmText}
+              onChange={(e) => setConfirmText(e.target.value)}
+              placeholder="ELIMINAR"
+              aria-label="Escribe ELIMINAR para confirmar"
+            />
+          </div>
+        </Modal>
+      )}
     </>
   );
 }

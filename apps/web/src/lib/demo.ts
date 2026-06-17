@@ -19,6 +19,18 @@ import { DEMO_FIXTURES, DEMO_DISABLED_FUNCTIONS } from './demo-fixtures';
 
 export const isDemoMode = import.meta.env.VITE_DEMO_MODE === 'true';
 
+/** Email del usuario de demostración compartido (ver README). */
+export const DEMO_USER_EMAIL = 'demo@zodiaq.app';
+
+/**
+ * ¿La sesión actual es la del usuario de demostración compartido?
+ * Se usa para proteger esa cuenta común (p. ej. ocultar el borrado de cuenta):
+ * si alguien la eliminara, el resto se quedaría sin usuario de prueba.
+ */
+export function isDemoUser(email: string | null | undefined): boolean {
+  return isDemoMode && (email ?? '').toLowerCase() === DEMO_USER_EMAIL;
+}
+
 /** Pequeña espera para que se vean las animaciones de carga, como en real. */
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
