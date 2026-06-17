@@ -159,7 +159,6 @@ El principio de seguridad central es que el cliente nunca invoca a Gemini ni a S
 
 ```
 tfm/
-├── CLAUDE.md                     Contexto maestro del proyecto
 ├── README.md                     Este archivo
 ├── apps/
 │   └── web/                      Aplicación React (frontend)
@@ -173,7 +172,7 @@ tfm/
 │       │   │   ├── reports, daily-energy, astro-events
 │       │   │   └── streaks, legal, privacy, profile
 │       │   ├── components/       UI reutilizable (layout, motion, visual)
-│       │   ├── lib/              Clientes (supabase, seo), utilidades y hooks
+│       │   ├── lib/              Clientes (supabase, seo), demo y utilidades
 │       │   ├── styles, types, i18n
 │       │   └── *.test.ts         Tests unitarios (Vitest)
 │       ├── .env                  Claves PÚBLICAS (versionado a propósito)
@@ -182,10 +181,20 @@ tfm/
 │       ├── vite.config.ts        Build y plugin de sitemap/robots
 │       └── tailwind.config / tsconfig
 └── supabase/
-    ├── migrations/               21 migraciones SQL versionadas (tablas, RLS, crons)
-    ├── functions/                18 Edge Functions (Deno)
-    └── seed/                     Generadores de datos semilla
+    └── migrations/               21 migraciones SQL versionadas (tablas, RLS, crons)
 ```
+
+### Qué incluye el repositorio (y qué se mantiene privado)
+
+Este repositorio contiene **todo lo necesario para clonar, arrancar y probar la plataforma de extremo a extremo** y comprobar que funciona correctamente: la aplicación web completa (frontend), las migraciones de base de datos (esquema y políticas de seguridad) y el modo demostración con resultados de ejemplo precargados.
+
+Por motivos de **confidencialidad y propiedad intelectual**, una parte de la lógica del *backend* **no se publica** en el repositorio, aunque sí está desplegada y en pleno funcionamiento en el servicio real que se prueba con el usuario de demostración:
+
+* La **ingeniería de los *prompts* de IA** y las *Edge Functions* de generación, que constituyen el núcleo diferencial del proyecto (las «recetas» con las que se elabora el contenido).
+* Los **generadores de datos semilla** deterministas.
+* La **documentación interna** y la memoria académica del TFM.
+
+El objetivo es **proteger el trabajo frente a copias o plagios** y no desvelar la fórmula concreta de generación de contenido, sin que ello impida en ningún momento probar y verificar que toda la plataforma funciona correctamente gracias al usuario de demostración.
 
 ---
 
@@ -200,16 +209,33 @@ No es necesario crear cuentas ni configurar claves. El repositorio incluye un ar
 
 ### Pasos
 
+**1. Clona el repositorio:**
+
 ```bash
-# 1. Clonar el repositorio
 git clone https://github.com/jcobosp/Servicio-web-de-generacion-de-horoscopos-basado-en-inteligencia-artificial.git
+```
+
+**2. Entra en la carpeta del proyecto:**
+
+```bash
 cd Servicio-web-de-generacion-de-horoscopos-basado-en-inteligencia-artificial
+```
 
-# 2. Entrar en la aplicación web e instalar dependencias
+**3. Entra en la aplicación web:**
+
+```bash
 cd apps/web
-npm install
+```
 
-# 3. Arrancar el servidor de desarrollo
+**4. Instala las dependencias:**
+
+```bash
+npm install
+```
+
+**5. Arranca el servidor de desarrollo:**
+
+```bash
 npm run dev
 ```
 
@@ -330,7 +356,7 @@ Todos se ejecutan dentro de `apps/web`:
 
 * **PostgreSQL gestionado por Supabase** con **21 migraciones SQL versionadas** (`supabase/migrations/`) que crean tablas, políticas RLS, funciones, *triggers*, índices y tareas programadas.
 * Más de **20 tablas** con **Row Level Security** activada y políticas explícitas: perfiles, suscripciones, cache de horóscopos, lecturas de tarot, cartas natales, reportes, créditos, consentimientos legales e idempotencia de eventos de Stripe, entre otras.
-* **18 Edge Functions** (Deno) que encapsulan toda la lógica sensible:
+* **18 Edge Functions** (Deno) que encapsulan toda la lógica sensible y que, aunque están desplegadas y operativas en el servicio, **no se incluyen en este repositorio público por confidencialidad** (ver [Qué incluye el repositorio](#qué-incluye-el-repositorio-y-qué-se-mantiene-privado)):
   * **Generación de IA:** `generate-horoscope`, `generate-daily-energy`, `generate-astro-events`, `generate-natal-chart`, `generate-full-natal-chart`, `generate-compatibility`, `generate-report`, `generate-tarot-reading`, `generate-advanced-tarot` y `generate-numerology`.
   * **Pagos con Stripe:** `create-checkout-session`, `create-portal-session`, `stripe-webhook` y las funciones de pago puntual de compatibilidad, tarot avanzado, numerología y tarot simple.
   * **Gestión de cuenta:** `delete-account`.
